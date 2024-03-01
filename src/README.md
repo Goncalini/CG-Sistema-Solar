@@ -3,4 +3,4 @@
 
 # Para complilar e executar
 - make
-- ./ProjetoCG <\ficheiroXML\>
+- ./ProjetoCG exemplo.xml
