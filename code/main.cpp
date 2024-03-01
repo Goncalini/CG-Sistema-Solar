@@ -90,6 +90,8 @@ void renderScene(void) {
 
 
 int main(int argc, char* argv[]) {
+    read_XML(argv[1]);
+
     // Init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -101,12 +103,6 @@ int main(int argc, char* argv[]) {
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
 
-
-    // Init GLEW
-#ifndef __APPLE__
-    glewInit();
-#endif
-
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -115,12 +111,8 @@ int main(int argc, char* argv[]) {
     // Enable smooth shading
     glShadeModel(GL_SMOOTH);
 
-    read_XML(argv[1]);
-
     // Enter GLUT's main cycle
     glutMainLoop();
-
-
     
     return 1;
 }

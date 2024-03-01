@@ -1,0 +1,3 @@
+/home/henriquenuno16/GitHub_Projects/CG/code/build/CMakeFiles/ProjetoCG.dir
+/home/henriquenuno16/GitHub_Projects/CG/code/build/CMakeFiles/edit_cache.dir
+/home/henriquenuno16/GitHub_Projects/CG/code/build/CMakeFiles/rebuild_cache.dir
