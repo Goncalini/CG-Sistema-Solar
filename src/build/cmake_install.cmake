@@ -1,4 +1,4 @@
-# Install script for directory: /home/henriquenuno16/GitHub_Projects/CG/code
+# Install script for directory: /home/henriquenuno16/GitHub_Projects/CG/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/henriquenuno16/GitHub_Projects/CG/code/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/henriquenuno16/GitHub_Projects/CG/src/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

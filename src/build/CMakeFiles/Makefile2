@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/henriquenuno16/GitHub_Projects/CG/code
+CMAKE_SOURCE_DIR = /home/henriquenuno16/GitHub_Projects/CG/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/henriquenuno16/GitHub_Projects/CG/code/build
+CMAKE_BINARY_DIR = /home/henriquenuno16/GitHub_Projects/CG/src/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -81,14 +81,14 @@ clean: CMakeFiles/ProjetoCG.dir/clean
 CMakeFiles/ProjetoCG.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProjetoCG.dir/build.make CMakeFiles/ProjetoCG.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProjetoCG.dir/build.make CMakeFiles/ProjetoCG.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/henriquenuno16/GitHub_Projects/CG/code/build/CMakeFiles --progress-num=1,2 "Built target ProjetoCG"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/henriquenuno16/GitHub_Projects/CG/src/build/CMakeFiles --progress-num=1,2 "Built target ProjetoCG"
 .PHONY : CMakeFiles/ProjetoCG.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ProjetoCG.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/henriquenuno16/GitHub_Projects/CG/code/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/henriquenuno16/GitHub_Projects/CG/src/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ProjetoCG.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/henriquenuno16/GitHub_Projects/CG/code/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/henriquenuno16/GitHub_Projects/CG/src/build/CMakeFiles 0
 .PHONY : CMakeFiles/ProjetoCG.dir/rule
 
 # Convenience name for target.
