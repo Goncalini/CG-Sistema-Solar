@@ -20,12 +20,14 @@ endif(NOT OPENGL_FOUND)
 # Set additional flags for C++11
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pugixml/src)
+
 # Add pugixml library
-find_library(PUGIXML_LIB pugixml)
-if(NOT PUGIXML_LIB)
-    message(FATAL_ERROR "pugixml library not found!")
-endif()
-target_link_libraries(${PROJECT_NAME} ${PUGIXML_LIB})
+#find_library(PUGIXML_LIB pugixml)
+#if(NOT PUGIXML_LIB)
+#    message(FATAL_ERROR "pugixml library not found!")
+#endif()
+#target_link_libraries(${PROJECT_NAME} ${PUGIXML_LIB})
 
 if(WIN32)
     message(STATUS "Toolkits_DIR set to: " ${TOOLKITS_FOLDER})
@@ -35,13 +37,22 @@ if(WIN32)
         message(ERROR ": GLUT not found")
     endif(NOT EXISTS "${TOOLKITS_FOLDER}/glut/GL/glut.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glut/glut32.lib")
 
-    include_directories(${TOOLKITS_FOLDER}/glut)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES}
-                          ${TOOLKITS_FOLDER}/glut/glut32.lib)
+    if (NOT EXISTS "${TOOLKITS_FOLDER}/glew/GL/glew.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glew/glew32.lib")
+		message(ERROR ": GLEW not found")
+    endif (NOT EXISTS "${TOOLKITS_FOLDER}/glew/GL/glew.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glew/glew32.lib")	
 
-    if(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll")
-        file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
-    endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll")
+
+    include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew)
+
+	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} 
+										  ${TOOLKITS_FOLDER}/glut/glut32.lib 
+										  ${TOOLKITS_FOLDER}/glew/glew32.lib
+                                          pugixml/src)
+
+    if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
+	file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
+	file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR})
+    endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
 
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
@@ -52,6 +63,9 @@ else()
     include_directories(${GLUT_INCLUDE_DIR})
     link_directories(${GLUT_LIBRARY_DIRS})
     add_definitions(${GLUT_DEFINITIONS})
+
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/libglut.so pugixml)
+
 
     target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
     if(NOT GLUT_FOUND)
