@@ -1,8 +1,8 @@
 .vs
 src/.vscode
 src/.idea
-#src/CMakeCache.txt
-#src/build/*
+src/CMakeCache.txt
+src/build/*
 
 
 
