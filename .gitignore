@@ -1,12 +1,14 @@
 .vs
-.vstudio
-CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
-build
+src/.vscode
+src/.idea
+src/CMakeCache.txt
+src/build
+
+
 
 # Prerequisites
 *.d
+*.3d
 
 # Compiled Object files
 *.slo
