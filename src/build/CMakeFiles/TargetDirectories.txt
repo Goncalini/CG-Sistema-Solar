@@ -1,3 +1,0 @@
-C:/Users/gonca/OneDrive/Ambiente de Trabalho/UNI/3 ano/2sem/CG/Projeto 2324/CG-2324/src/build/CMakeFiles/ProjetoCG.dir
-C:/Users/gonca/OneDrive/Ambiente de Trabalho/UNI/3 ano/2sem/CG/Projeto 2324/CG-2324/src/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/gonca/OneDrive/Ambiente de Trabalho/UNI/3 ano/2sem/CG/Projeto 2324/CG-2324/src/build/CMakeFiles/ZERO_CHECK.dir
