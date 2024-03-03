@@ -1,5 +1,5 @@
 .vs
-.vscode
+.vstudio
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
