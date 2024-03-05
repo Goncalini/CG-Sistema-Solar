@@ -89,7 +89,7 @@ void renderScene(void) {
 }
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     read_XML(argv[1]);
 
     // Init GLUT and the window

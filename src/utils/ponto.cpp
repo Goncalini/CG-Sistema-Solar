@@ -9,6 +9,7 @@ Ponto newPonto(float x, float y, float z) {
 	if (n != NULL) {
 		n->x = x; n->y = y; n->z = z;
 	}
+	//std::cout << getX(n) << ";" << getY(n) << ";" << getZ(n) << "\n";
 	return n;
 }
 

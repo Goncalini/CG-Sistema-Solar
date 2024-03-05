@@ -5,7 +5,36 @@ PROJECT(ProjetoCG)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} main.cpp)
+#add_executable(${PROJECT_NAME} main.cpp)
+add_executable(engine ./main.cpp)
+add_executable(generator ./generator/generator.cpp)
+
+add_library(
+	utils_lib
+	utils/ponto.cpp
+	utils/ponto.hpp
+	utils/figura.cpp
+	utils/figura.hpp
+)
+
+add_library(
+    pugixml_lib
+    pugixml/src/pugixml.cpp
+    pugixml/src/pugixml.hpp
+    pugixml/src/pugiconfig.hpp
+)
+
+add_library(
+    figures_lib
+    generator/plane.cpp
+    generator/box.cpp
+    generator/sphere.cpp
+    generator/cone.cpp
+)
+
+# Associa a biblioteca das figuras e dos pontos aos executáveis
+target_link_libraries(generator utils_lib figures_lib)
+target_link_libraries(engine utils_lib figures_lib pugixml_lib)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -17,8 +46,6 @@ if(NOT OPENGL_FOUND)
     message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
-# Set additional flags for C++11
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pugixml/src)
 
@@ -43,20 +70,25 @@ if(WIN32)
 
 
     include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew)
+   target_link_libraries(engine ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/glut/glut32.lib
+										${TOOLKITS_FOLDER}/glew/glew32.lib
+                                        pugixml_lib)
 
-	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} 
-										  ${TOOLKITS_FOLDER}/glut/glut32.lib 
-										  ${TOOLKITS_FOLDER}/glew/glew32.lib
-                                          pugixml/src)
+    target_link_libraries(generator ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/glut/glut32.lib)
+
+#   target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} 
+#										  ${TOOLKITS_FOLDER}/glut/glut32.lib 
+#										  ${TOOLKITS_FOLDER}/glew/glew32.lib
+#                                         pugixml/src)
 
     if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
-	file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
-	file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR})
+	    file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
+	    file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR})
     endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
 
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+    #set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
 
-else()
+else(WIN32)
     # Linux and Mac specific configurations
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
     find_package(GLUT REQUIRED)
@@ -64,11 +96,10 @@ else()
     link_directories(${GLUT_LIBRARY_DIRS})
     add_definitions(${GLUT_DEFINITIONS})
 
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/libglut.so pugixml)
+    target_link_libraries(engine ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+    target_link_libraries(generator ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 
-
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
     if(NOT GLUT_FOUND)
        message(ERROR ": GLUT not found!")
     endif(NOT GLUT_FOUND)
-endif()
+endif(WIN32)

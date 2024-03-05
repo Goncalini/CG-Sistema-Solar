@@ -1,10 +1,11 @@
 #include <stdio.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
-#include "figura.hpp"
+#include "../utils/figura.hpp"
 
 Figura generateCone(float radius, float height, int slices, int stacks) {
-	Figura cone;
-	float alfa = 2.0f * M_PI / slices;
+	Figura cone = Figura();
+	float alfa = (float)(2.0f * M_PI) / slices;
 	//altura das stacks
 	float div_height = height / stacks;
 
@@ -19,16 +20,17 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 	}
 
 	float atual_radius;
-	float next_radius;
+	float next_radius = radius;
+	int n = 0;
 
 	//laterais
 	for (int i = 0; i < slices; i++) {
 		atual_radius = radius;
 		for (int j = 0; j < stacks - 1;j++) {
 			//o raio de cada stack vai ser (1 - ("stack atual" / "numero stacks totais")) * raio da base
-			int n = j + 1;
+			n = j + 1;
 			//atual_radius = (1.0 - ((float) j / stacks)) * radius;
-			next_radius = (1.0 - ((float) n / stacks)) * radius;
+			next_radius = (float)(1.0 - ((float) n / stacks)) * radius;
 
 			//primeiro triangulo
 			addPonto(cone, newPonto(atual_radius * sin(i * alfa), div_height * j, atual_radius * cos(i * alfa)));

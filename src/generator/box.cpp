@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "figura.hpp"
+#include "../utils/figura.hpp"
 
 
-void generateXZ(int length, int divisions, float height, int baixo, Figura figura) {
+void generateXZ(int length, int divisions, float height, int baixo, Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
@@ -27,6 +27,7 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura figur
 			addPonto(figura, newPonto(x1 + collums * div, height, z1));
 			addPonto(figura, newPonto(x2 + collums * div, height, z2));
 
+
 			//segundo triangulo
 			addPonto(figura, newPonto(x2 + collums * div, height, z2));
 			addPonto(figura, newPonto(x3 + collums * div, height, z3));
@@ -34,11 +35,12 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura figur
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
+	//writeToFile(figura, "box.ex");
 	//mudar return 
 }
 
 
-void generateXY(int length, int divisions, float height, int reverse,Figura figura) {
+void generateXY(int length, int divisions, float height, int reverse,Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
@@ -73,12 +75,13 @@ void generateXY(int length, int divisions, float height, int reverse,Figura figu
 		y0 += div; y1 += div; y2 += div; y3 += div;
 	}
 	//mudar return 
+	//writeToFile(figura, "box.ex");
 }
 
 
 
 //padrão é para o negativo do X
-void generateYZ(int length, int divisions, float height, int reverse,Figura figura) {
+void generateYZ(int length, int divisions, float height, int reverse,Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
 
@@ -115,29 +118,20 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura figu
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
 	//mudar return 
+	//writeToFile(figura, "box.ex");
 }
 
 
 
 //trocar para gerar figura
 Figura generateBox(int length, int divisions) {
-	Figura box;
+	Figura box = Figura();
 	float half = (float)length / 2;
-	//top = generateXZ(length, divisions, half, 0, box);
-	//bottom = generateXZ(length, divisions, -half, 1,box);
-	//front = generateXY(length, divisions, -half, 0);
-	//back = generateXY(length, divisions, half, 1);
-	//left = generateYZ(length, divisions, -half, 0);
-	//right = generateYZ(length, divisions, half, 1);
 	generateXZ(length, divisions, half, 0, box);
 	generateXZ(length, divisions, -half, 1, box);
 	generateXY(length, divisions, -half, 0, box);
 	generateXY(length, divisions, half, 1, box);
 	generateYZ(length, divisions, -half, 0, box);
 	generateYZ(length, divisions, half, 1, box);
-
-
-	//adicionar pontos
-	//mudar return
 	return box;
 }
