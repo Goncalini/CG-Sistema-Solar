@@ -117,6 +117,9 @@ void drawAxis(){
 		glColor3f(0.0f, 0.0f, 1.0f);
 		glVertex3f(0.0f, 0.0f, -100.0f);
 		glVertex3f(0.0f, 0.0f, 100.0f);
+
+        //return to white
+        glColor3f(1.0f, 1.0f, 1.0f);
     glEnd();
 }
 
@@ -131,7 +134,6 @@ void drawFigure(std::string figureFile){
     std::vector<float> vertexB;
 
     // Leia o file linha por linha
-    glColor3f(1.0f, 1.0f, 1.0f);
     while (std::getline(file, linha)) {
         std::istringstream iss(linha);
         std::string token;
