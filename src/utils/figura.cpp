@@ -1,7 +1,7 @@
 #include "figura.hpp"
 using namespace std;
 
-//figura é constituida por pontos
+//figura ï¿½ constituida por pontos
 
 
 void addPonto(Figura& f, Ponto p) {
@@ -22,12 +22,10 @@ void writeToFile(Figura f, const char* file_path) {
 		return;
 	}
 
-	//Escreve o número de pontos no inicio do ficheiro
-	int tamanho = f.pontos.size();
-	file << tamanho << std::endl;
-
+	//Escreve cabecalho dos pontos
+	file << "PosX; PosY; PosZ" << std::endl;
 	for (const auto& ponto : f.pontos){
-		file << getX(ponto) << "," << getY(ponto) << "," << getZ(ponto) << "\n";
+		file << getX(ponto) << ";" << getY(ponto) << ";" << getZ(ponto) << "\n";
 	}
 
 	file.close();

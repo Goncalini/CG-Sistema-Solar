@@ -1,10 +1,8 @@
 .vs
-src/.vscode
-src/.idea
+.vscode
+.idea
 src/CMakeCache.txt
 src/build/*
-src/pugixml/*
-
 
 # Prerequisites
 *.d

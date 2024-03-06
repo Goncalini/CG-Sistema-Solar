@@ -6,7 +6,7 @@ PROJECT(ProjetoCG)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #add_executable(${PROJECT_NAME} main.cpp)
-add_executable(engine ./main.cpp)
+add_executable(engine ./engine/engine.cpp)
 add_executable(generator ./generator/generator.cpp)
 
 add_library(
