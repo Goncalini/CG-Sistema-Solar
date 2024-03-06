@@ -37,10 +37,6 @@ target_link_libraries(generator utils_lib figures_lib)
 target_link_libraries(engine utils_lib figures_lib pugixml_lib)
 
 # Find OpenGL
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-target_link_libraries(engine ${GLEW_LIBRARIES})
-
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
@@ -74,7 +70,7 @@ if(WIN32)
 
 
     include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew)
-   target_link_libraries(engine ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/glut/glut32.lib
+    target_link_libraries(engine ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/glut/glut32.lib
 										${TOOLKITS_FOLDER}/glew/glew32.lib
                                         pugixml_lib)
 
@@ -100,7 +96,10 @@ else(WIN32)
     link_directories(${GLUT_LIBRARY_DIRS})
     add_definitions(${GLUT_DEFINITIONS})
 
-    target_link_libraries(engine ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+    find_package(GLEW REQUIRED)
+    include_directories(${GLEW_INCLUDE_DIRS})
+
+    target_link_libraries(engine ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})
     target_link_libraries(generator ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 
     if(NOT GLUT_FOUND)

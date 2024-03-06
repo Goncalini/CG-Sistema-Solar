@@ -12,11 +12,11 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 		x3 = -half + div, z3 = -half + div;
 	//se for a fase de baixo, precisa de estar virada para baixo!
 	if (baixo == 1) {
-		float xaux = x1, zaux = z1;
-		x1 = x2; 
-		z1 = z2;
-		x2 = xaux; 
-		z2 = zaux;
+		float xaux = x0, zaux = z0;
+		x0 = x3; 
+		z0 = z3;
+		x3 = xaux;
+		z3 = zaux;
 	}
 
 	for (int line = 0; line < divisions; line++) {
@@ -25,13 +25,14 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 			//primeiro triangulo
 			addPonto(figura, newPonto(x0 + collums * div, height, z0));
 			addPonto(figura, newPonto(x1 + collums * div, height, z1));
-			addPonto(figura, newPonto(x2 + collums * div, height, z2));
+			addPonto(figura, newPonto(x3 + collums * div, height, z3));
 
 
 			//segundo triangulo
 			addPonto(figura, newPonto(x2 + collums * div, height, z2));
-			addPonto(figura, newPonto(x3 + collums * div, height, z3));
 			addPonto(figura, newPonto(x0 + collums * div, height, z0));
+			addPonto(figura, newPonto(x3 + collums * div, height, z3));
+			
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
@@ -51,26 +52,23 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 
 	//se for a fase de trás, precisa de estar virada!
 	if (reverse == 1) {
-		float xaux = x1, yaux = y1;
-		x1 = x2;
-		y1 = y2;
-		x2 = xaux;
-		y2 = yaux;
+		float xaux = x0, yaux = y0;
+		x0 = x3;
+		y0 = y3;
+		x3 = xaux;
+		y3 = yaux;
 	}
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
-			//@TODO - meter aqui as funcoes de meter as cenas na figura
-			//so estou a meter os pontos
-
 			//primeiro triangulo
 			addPonto(figura, newPonto(x0 + collums * div, y0, height));
 			addPonto(figura, newPonto(x1 + collums * div, y1, height));
-			addPonto(figura, newPonto(x2 + collums * div, y2, height));
+			addPonto(figura, newPonto(x3 + collums * div, y3, height));
 
 			//segundo triangulo
-			addPonto(figura, newPonto(x1 + collums * div, y1, height));
-			addPonto(figura, newPonto(x3 + collums * div, y3, height));
 			addPonto(figura, newPonto(x2 + collums * div, y2, height));
+			addPonto(figura, newPonto(x0 + collums * div, y0, height));
+			addPonto(figura, newPonto(x3 + collums * div, y3, height));
 		}
 		y0 += div; y1 += div; y2 += div; y3 += div;
 	}
@@ -93,27 +91,24 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 
 	//se for a fase de trás, precisa de estar virada!
 	if (reverse == 1) {
-		float yaux = y1, zaux = z1;
-		y1 = y2;
-		z1 = z2;
-		y2 = yaux;
-		z2 = zaux;
+		float yaux = y0, zaux = z0;
+		y0 = y3;
+		z0 = z3;
+		y3 = yaux;
+		z3 = zaux;
 	}
 
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
-			//@TODO - meter aqui as funcoes de meter as cenas na figura
-			//so estou a meter os pontos
-
 			//primeiro triangulo
 			addPonto(figura, newPonto(height, y0 + collums * div, z0));
 			addPonto(figura, newPonto(height, y1 + collums * div, z1));
-			addPonto(figura, newPonto(height, y2 + collums * div, z2));
+			addPonto(figura, newPonto(height, y3 + collums * div, z3));
 
 			//segundo triangulo
-			addPonto(figura, newPonto(height, y1 + collums * div, z1));
-			addPonto(figura, newPonto(height, y3 + collums * div, z3));
 			addPonto(figura, newPonto(height, y2 + collums * div, z2));
+			addPonto(figura, newPonto(height, y0 + collums * div, z0));
+			addPonto(figura, newPonto(height, y3 + collums * div, z3));
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
