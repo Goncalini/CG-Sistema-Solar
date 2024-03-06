@@ -16,11 +16,21 @@
 
 int width;
 int height;
-float camPosX;
-float camPosY;
-float camPosZ;
-std::list<std::string>files;
 
+int camPosX;
+int camPosY;
+int camPosZ;
+int camLookAtX;
+int camLookAtY;
+int camLookAtZ;
+int camUpX;
+int camUpY;
+int camUpZ;
+int camProjectionFOV;
+int camProjectionNear;
+int camProjectionFar;
+
+std::list<std::string>files;
 
 void read_XML(char* file_path){
     pugi::xml_document doc;
@@ -37,10 +47,22 @@ void read_XML(char* file_path){
 
         // Processar atributos do elemento camera
         pugi::xml_node cameraNode = rootNode.child("camera");
-        camPosX = cameraNode.child("position").attribute("x").as_float();
-        camPosY = cameraNode.child("position").attribute("y").as_float();
-        camPosZ = cameraNode.child("position").attribute("z").as_float();
+        camPosX = cameraNode.child("position").attribute("x").as_int();
+        camPosY = cameraNode.child("position").attribute("y").as_int();
+        camPosZ = cameraNode.child("position").attribute("z").as_int();
 
+        camLookAtX = cameraNode.child("lookAt").attribute("x").as_int();
+        camLookAtY = cameraNode.child("lookAt").attribute("y").as_int();
+        camLookAtZ = cameraNode.child("lookAt").attribute("z").as_int();
+
+        camUpX = cameraNode.child("up").attribute("x").as_int();
+        camUpY = cameraNode.child("up").attribute("y").as_int();
+        camUpZ = cameraNode.child("up").attribute("z").as_int();
+        
+        camProjectionFOV = cameraNode.child("projection").attribute("fov").as_int();
+        camProjectionNear = cameraNode.child("projection").attribute("near").as_int();
+        camProjectionFar = cameraNode.child("projection").attribute("far").as_int();
+        
         // Processar modelos
         pugi::xml_node modelsNode = rootNode.child("group").child("models");
         for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
@@ -68,10 +90,27 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
     // Set perspective
-    gluPerspective(45.0f, ratio, 1.0f, 1000.0f);
+    gluPerspective(camProjectionFOV, ratio, camProjectionNear, camProjectionFar);
 
     // Return to the model view matrix mode
     glMatrixMode(GL_MODELVIEW);
+}
+
+void drawAxis(){
+    glBegin(GL_LINES);
+		// X axis in red
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glVertex3f(-100.0f, 0.0f, 0.0f);
+		glVertex3f(100.0f, 0.0f, 0.0f);
+		// Y Axis in Green
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glVertex3f(0.0f, -100.0f, 0.0f);
+		glVertex3f(0.0f, 100.0f, 0.0f);
+		// Z Axis in Blue
+		glColor3f(0.0f, 0.0f, 1.0f);
+		glVertex3f(0.0f, 0.0f, -100.0f);
+		glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
 }
 
 void renderScene(void) {
@@ -81,8 +120,10 @@ void renderScene(void) {
     // Set the camera
     glLoadIdentity();
     gluLookAt(camPosX, camPosY, camPosZ,
-        0.0, 0.0, 0.0,
-        0.0f, 1.0f, 0.0f);
+        camLookAtX, camLookAtY, camLookAtZ,
+        camUpX, camUpY, camUpZ);
+
+    drawAxis();
 
     // End of frame
     glutSwapBuffers();
