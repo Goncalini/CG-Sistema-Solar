@@ -22,8 +22,9 @@ void writeToFile(Figura f, const char* file_path) {
 		return;
 	}
 
-	//Escreve cabecalho dos pontos
-	file << "PosX; PosY; PosZ" << std::endl;
+	int tamanho = f.pontos.size();
+	file << tamanho << std::endl;
+
 	for (const auto& ponto : f.pontos){
 		file << getX(ponto) << ";" << getY(ponto) << ";" << getZ(ponto) << "\n";
 	}

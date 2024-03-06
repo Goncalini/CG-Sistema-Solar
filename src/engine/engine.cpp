@@ -2,6 +2,9 @@
 #include "pugixml.hpp"
 #include <stdio.h>
 #include <list>
+#include <vector>
+#include <fstream>
+#include <sstream>
 #include <string>
 
 #ifdef __APPLE__
@@ -31,6 +34,10 @@ int camProjectionNear;
 int camProjectionFar;
 
 std::list<std::string>files;
+
+// VBOs
+GLuint buffers[1];
+int vertices;
 
 void read_XML(char* file_path){
     pugi::xml_document doc;
@@ -113,6 +120,34 @@ void drawAxis(){
     glEnd();
 }
 
+void drawFigure(std::string figureFile){
+    // Abra o arquivo
+    std::ifstream file(figureFile); // Assuming the file name is figureFile.txt
+
+    //Guarda o numero de vertices e cria o vetor
+    std::string linha;
+    std::getline(file, linha);
+    vertices = std::stoi(linha);
+    std::vector<float> vertexB;
+
+    // Leia o file linha por linha
+    glColor3f(1.0f, 1.0f, 1.0f);
+    while (std::getline(file, linha)) {
+        std::istringstream iss(linha);
+        std::string token;
+        while (std::getline(iss, token, ';')) {
+            float value = std::stof(token);
+            vertexB.push_back(value);
+        }
+    }
+
+    // Feche o file
+    file.close();
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]); 
+    glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
+}
+
 void renderScene(void) {
     // Clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -124,6 +159,17 @@ void renderScene(void) {
         camUpX, camUpY, camUpZ);
 
     drawAxis();
+
+    // Enable vertex array
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    // VBOs
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, vertices);
+
+    // Disable vertex array
+    glDisableClientState(GL_VERTEX_ARRAY);
 
     // End of frame
     glutSwapBuffers();
@@ -144,6 +190,11 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
 
+    // Init GLEW
+    #ifndef __APPLE__
+    glewInit();
+    #endif
+
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -151,6 +202,13 @@ int main(int argc, char *argv[]) {
 
     // Enable smooth shading
     glShadeModel(GL_SMOOTH);
+
+    // Initialize VBOs
+    glGenBuffers(1, buffers);
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+    for (const auto& file : files) {
+        drawFigure(file);
+    }
 
     // Enter GLUT's main cycle
     glutMainLoop();

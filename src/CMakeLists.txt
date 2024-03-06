@@ -37,6 +37,10 @@ target_link_libraries(generator utils_lib figures_lib)
 target_link_libraries(engine utils_lib figures_lib pugixml_lib)
 
 # Find OpenGL
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+target_link_libraries(engine ${GLEW_LIBRARIES})
+
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
