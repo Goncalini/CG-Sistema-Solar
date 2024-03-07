@@ -36,7 +36,9 @@ float camProjectionFar;
 std::list<std::string>files;
 
 // VBOs
-GLuint buffers[1];
+int const numFigurasMax = 100;
+GLuint buffers[numFigurasMax];
+int numFiguras = 0;
 int vertices;
 
 void read_XML(char* file_path){
@@ -146,7 +148,7 @@ void drawFigure(std::string figureFile){
     // Feche o file
     file.close();
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]); 
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras++]); 
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
 }
 
@@ -166,9 +168,11 @@ void renderScene(void) {
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // VBOs
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, vertices);
+    for (int i=0;i<numFiguras;i++){
+        glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        glDrawArrays(GL_TRIANGLES, 0, vertices);
+    }
 
     // Disable vertex array
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -206,8 +210,7 @@ int main(int argc, char *argv[]) {
     glShadeModel(GL_SMOOTH);
 
     // Initialize VBOs
-    glGenBuffers(1, buffers);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+    glGenBuffers(numFigurasMax, buffers);
     for (const auto& file : files) {
         drawFigure(file);
     }
