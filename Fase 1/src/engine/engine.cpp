@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <iostream>
 #include "pugixml.hpp"
 #include <stdio.h>
@@ -17,6 +18,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+using namespace std;
+
 int width;
 int height;
 
@@ -32,6 +35,11 @@ float camUpZ;
 float camProjectionFOV;
 float camProjectionNear;
 float camProjectionFar;
+
+float alfa = M_PI / 4;
+float beta2 = M_PI / 4; //beta is anbiguos in std beta
+float raio = 5.0f;
+GLenum mode = GL_LINE;
 
 std::list<std::string>files;
 
@@ -128,11 +136,14 @@ void drawAxis(){
 void drawFigure(std::string figureFile){
     // Abra o arquivo
     std::ifstream file(figureFile); // Assuming the file name is figureFile.txt
-
+   
     //Guarda o numero de vertices e cria o vetor
     std::string linha;
     std::getline(file, linha);
+
     vertices = std::stoi(linha);
+    //std::cout << vertices << std::endl;
+
     std::vector<float> vertexB;
 
     // Leia o file linha por linha
@@ -158,11 +169,13 @@ void renderScene(void) {
 
     // Set the camera
     glLoadIdentity();
-    gluLookAt(camPosX, camPosY, camPosZ,
+    gluLookAt(raio * cos(beta2) * sin(alfa), raio * sin(beta2), raio * cos(beta2) * cos(alfa),
         camLookAtX, camLookAtY, camLookAtZ,
         camUpX, camUpY, camUpZ);
 
     drawAxis();
+
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
 
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -182,9 +195,59 @@ void renderScene(void) {
 }
 
 
+void processSpecialKeys(int key, int xx, int yy) {
+    switch (key) {
+        case GLUT_KEY_RIGHT:
+            alfa += 0.1f;
+            break;
+        case GLUT_KEY_LEFT:
+            alfa -= 0.1f;
+            break;
+        case GLUT_KEY_UP:
+            beta2 += 0.1f;
+            break;
+        case GLUT_KEY_DOWN:
+            beta2 -= 0.1f;
+            break;
+        case GLUT_KEY_F1: 
+            raio -= 0.1f;
+            break;
+        case GLUT_KEY_F2:
+            raio += 0.1f;
+            break;
+    }
+    
+    glutPostRedisplay();
+}
+
+void processKeys(unsigned char key, int xx, int yy) {
+    // put code to process regular keys in here
+    switch (key) {
+        case 'f':
+            mode = GL_FILL;
+            break;
+
+        case 'l':
+            mode = GL_LINE;
+            break;
+
+        case 'p':
+            mode = GL_POINT;
+            break;
+    }
+    
+    glutPostRedisplay();
+}
+
 int main(int argc, char *argv[]) {
+    printf("Engine started\n");
+
     read_XML(argv[1]);
 
+    alfa = acos(camPosZ / sqrt(camPosX * camPosX + camPosZ * camPosZ));
+    raio = sqrt((camPosX * camPosX) + (camPosY * camPosY) + (camPosZ * camPosZ));
+    beta2 = asin(camPosY / raio);
+    
     // Init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -196,27 +259,29 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
 
+    glutKeyboardFunc(processKeys);
+    glutSpecialFunc(processSpecialKeys);
+
     // Init GLEW
     #ifndef __APPLE__
     glewInit();
     #endif
-
+    
     // OpenGL settings
+    glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT, GL_LINE);
-
     // Enable smooth shading
     glShadeModel(GL_SMOOTH);
 
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
+
     for (const auto& file : files) {
         drawFigure(file);
     }
-
+    
     // Enter GLUT's main cycle
     glutMainLoop();
-    
     return 1;
 }
