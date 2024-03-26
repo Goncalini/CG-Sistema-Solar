@@ -49,6 +49,12 @@ GLuint buffers[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
+struct Transform {
+    float translateX, translateY, translateZ;
+    float rotateAngle, rotateX, rotateY, rotateZ;
+    float scaleX, scaleY, scaleZ; 
+};
+
 void read_XML(char* file_path){
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(file_path);
@@ -81,10 +87,38 @@ void read_XML(char* file_path){
         camProjectionFar = cameraNode.child("projection").attribute("far").as_float();
         
         // Processar modelos
-        pugi::xml_node modelsNode = rootNode.child("group").child("models");
-        for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
-            std::string filename = modelNode.attribute("file").as_string();
-            files.push_back(filename);
+        pugi::xml_node groupNode = rootNode.child("group");
+
+        for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
+            Transform transform;
+
+            pugi::xml_node translateNode = transformNode.child("translate");
+            if (translateNode) {
+                transform.translateX = translateNode.attribute("x").as_float();
+                transform.translateY = translateNode.attribute("y").as_float();
+                transform.translateZ = translateNode.attribute("z").as_float();
+            }
+
+            pugi::xml_node rotateNode = transformNode.child("rotate");
+            if (rotateNode) {
+                transform.rotateAngle = rotateNode.attribute("angle").as_float();
+                transform.rotateX = rotateNode.attribute("x").as_float();
+                transform.rotateY = rotateNode.attribute("y").as_float();
+                transform.rotateZ = rotateNode.attribute("z").as_float();
+            }
+
+            pugi::xml_node scaleNode = transformNode.child("scale");
+            if (scaleNode) {
+                transform.scaleX = scaleNode.attribute("x").as_float();
+                transform.scaleY = scaleNode.attribute("y").as_float();
+                transform.scaleZ = scaleNode.attribute("z").as_float();
+            }
+
+            pugi::xml_node modelsNode = groupNode.child("models");
+            for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
+                std::string filename = modelNode.attribute("file").as_string();
+                files.push_back(filename);
+            }
         }
     }
 }
@@ -210,10 +244,10 @@ void processSpecialKeys(int key, int xx, int yy) {
             beta2 -= 0.1f;
             break;
         case GLUT_KEY_F1: 
-            raio -= 0.1f;
+            raio -= 0.5f;
             break;
         case GLUT_KEY_F2:
-            raio += 0.1f;
+            raio += 0.5f;
             break;
     }
     
