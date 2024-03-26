@@ -41,57 +41,63 @@ float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
-std::list<std::string>files;
-
 // VBOs
 int const numFigurasMax = 100;
 GLuint buffers[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
-struct Transform {
+//GroupsParser
+int groupCtd = 0;
+struct Group {
+    int id;
+    std::list<std::string> files;
     float translateX, translateY, translateZ;
     float rotateAngle, rotateX, rotateY, rotateZ;
     float scaleX, scaleY, scaleZ; 
 };
+std::list<Group> groupsList;
 
 void processGroup_XML(pugi::xml_node groupNode){
-    for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
-        Transform transform;
+    Group group;
+    group.id = groupCtd++;
 
+    for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
         pugi::xml_node translateNode = transformNode.child("translate");
         if (translateNode) {
-            transform.translateX = translateNode.attribute("x").as_float();
-            transform.translateY = translateNode.attribute("y").as_float();
-            transform.translateZ = translateNode.attribute("z").as_float();
+            group.translateX = translateNode.attribute("x").as_float();
+            group.translateY = translateNode.attribute("y").as_float();
+            group.translateZ = translateNode.attribute("z").as_float();
         }
 
         pugi::xml_node rotateNode = transformNode.child("rotate");
         if (rotateNode) {
-            transform.rotateAngle = rotateNode.attribute("angle").as_float();
-            transform.rotateX = rotateNode.attribute("x").as_float();
-            transform.rotateY = rotateNode.attribute("y").as_float();
-            transform.rotateZ = rotateNode.attribute("z").as_float();
+            group.rotateAngle = rotateNode.attribute("angle").as_float();
+            group.rotateX = rotateNode.attribute("x").as_float();
+            group.rotateY = rotateNode.attribute("y").as_float();
+            group.rotateZ = rotateNode.attribute("z").as_float();
         }
 
         pugi::xml_node scaleNode = transformNode.child("scale");
         if (scaleNode) {
-            transform.scaleX = scaleNode.attribute("x").as_float();
-            transform.scaleY = scaleNode.attribute("y").as_float();
-            transform.scaleZ = scaleNode.attribute("z").as_float();
+            group.scaleX = scaleNode.attribute("x").as_float();
+            group.scaleY = scaleNode.attribute("y").as_float();
+            group.scaleZ = scaleNode.attribute("z").as_float();
         }
     }
 
     pugi::xml_node modelsNode = groupNode.child("models");
     for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
         std::string filename = modelNode.attribute("file").as_string();
-        files.push_back(filename);
+        group.files.push_back(filename);
     }
 
     pugi::xml_node groupsNode = groupNode.child("group");
     for (pugi::xml_node groupNode = groupsNode; groupNode; groupNode = groupNode.next_sibling("group")) {
         processGroup_XML(groupNode);
     }
+
+    groupsList.push_front(group);
 }
 
 void read_XML(char* file_path){
@@ -286,10 +292,6 @@ int main(int argc, char *argv[]) {
 
     read_XML(argv[1]);
 
-    for (std::string file : files){
-        std::cout << "Filename: " << file << std::endl;
-    }
-
     alfa = acos(camPosZ / sqrt(camPosX * camPosX + camPosZ * camPosZ));
     raio = sqrt((camPosX * camPosX) + (camPosY * camPosY) + (camPosZ * camPosZ));
     beta2 = asin(camPosY / raio);
@@ -323,10 +325,6 @@ int main(int argc, char *argv[]) {
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
 
-    for (const auto& file : files) {
-        drawFigure(file);
-    }
-    
     // Enter GLUT's main cycle
     glutMainLoop();
     return 1;
