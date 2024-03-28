@@ -325,6 +325,12 @@ int main(int argc, char *argv[]) {
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
 
+    for (Group group: groupsList){
+        for (const auto& file : group.files) {
+            drawFigure(file);
+        }
+    }
+
     // Enter GLUT's main cycle
     glutMainLoop();
     return 1;
