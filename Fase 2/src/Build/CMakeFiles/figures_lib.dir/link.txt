@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfigures_lib.a CMakeFiles/figures_lib.dir/generator/plane.cpp.o CMakeFiles/figures_lib.dir/generator/box.cpp.o CMakeFiles/figures_lib.dir/generator/sphere.cpp.o CMakeFiles/figures_lib.dir/generator/cone.cpp.o
+/usr/bin/ranlib libfigures_lib.a

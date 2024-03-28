@@ -1,0 +1,7 @@
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/engine.dir
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/generator.dir
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/utils_lib.dir
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/pugixml_lib.dir
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/figures_lib.dir
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/edit_cache.dir
+/home/emamartins12/GIT/CG-2324/Fase 2/src/Build/CMakeFiles/rebuild_cache.dir

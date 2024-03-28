@@ -1,0 +1,2 @@
+/usr/bin/ar qc libutils_lib.a CMakeFiles/utils_lib.dir/utils/ponto.cpp.o CMakeFiles/utils_lib.dir/utils/figura.cpp.o
+/usr/bin/ranlib libutils_lib.a

@@ -55,10 +55,11 @@ struct Group {
     float translateX, translateY, translateZ;
     float rotateAngle, rotateX, rotateY, rotateZ;
     float scaleX, scaleY, scaleZ; 
+    std::list<int> children;
 };
 std::list<Group> groupsList;
 
-void processGroup_XML(pugi::xml_node groupNode){
+Group processGroup_XML(pugi::xml_node groupNode){
     Group group;
     group.id = groupCtd++;
 
@@ -94,10 +95,12 @@ void processGroup_XML(pugi::xml_node groupNode){
 
     pugi::xml_node groupsNode = groupNode.child("group");
     for (pugi::xml_node groupNode = groupsNode; groupNode; groupNode = groupNode.next_sibling("group")) {
-        processGroup_XML(groupNode);
+        Group new_group= processGroup_XML(groupNode);
+        group.children.push_front(new_group.id);
     }
 
     groupsList.push_front(group);
+    return group;
 }
 
 void read_XML(char* file_path){
@@ -326,7 +329,7 @@ int main(int argc, char *argv[]) {
     glGenBuffers(numFigurasMax, buffers);
 
     for (Group group: groupsList){
-        for (const auto& file : group.files) {
+        for (const auto& file : group.files){
             drawFigure(file);
         }
     }
