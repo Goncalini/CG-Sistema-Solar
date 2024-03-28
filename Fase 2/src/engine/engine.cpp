@@ -96,10 +96,10 @@ Group processGroup_XML(pugi::xml_node groupNode){
     pugi::xml_node groupsNode = groupNode.child("group");
     for (pugi::xml_node groupNode = groupsNode; groupNode; groupNode = groupNode.next_sibling("group")) {
         Group new_group= processGroup_XML(groupNode);
-        group.children.push_front(new_group.id);
+        group.children.push_back(new_group.id);
+        groupsList.push_back(new_group);
     }
 
-    groupsList.push_front(group);
     return group;
 }
 
@@ -136,7 +136,7 @@ void read_XML(char* file_path){
         
         // Processar modelos
         pugi::xml_node groupNode = rootNode.child("group");
-        processGroup_XML(groupNode);
+        groupsList.push_front(processGroup_XML(groupNode));
     }
 }
 
@@ -329,6 +329,10 @@ int main(int argc, char *argv[]) {
     glGenBuffers(numFigurasMax, buffers);
 
     for (Group group: groupsList){
+        std::cout <<"Grupo: " << group.id << std::endl;
+        for (int children : group.children){
+            std::cout <<"Filho: " << children << std::endl;
+        }
         for (const auto& file : group.files){
             drawFigure(file);
         }
