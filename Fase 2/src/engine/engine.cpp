@@ -47,60 +47,46 @@ GLuint buffers[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
-//GroupsParser
-int groupCtd = 0;
-struct Group {
-    int id;
-    std::list<std::string> files;
-    float translateX, translateY, translateZ;
-    float rotateAngle, rotateX, rotateY, rotateZ;
-    float scaleX, scaleY, scaleZ; 
-    std::list<int> children;
-};
-std::list<Group> groupsList;
+//Transformações
+std::list<std::string> transformations;
 
-Group processGroup_XML(pugi::xml_node groupNode){
-    Group group;
-    group.id = groupCtd++;
+void processGroup_XML(pugi::xml_node groupNode){
+    transformations.push_back("push");
 
     for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
-        pugi::xml_node translateNode = transformNode.child("translate");
-        if (translateNode) {
-            group.translateX = translateNode.attribute("x").as_float();
-            group.translateY = translateNode.attribute("y").as_float();
-            group.translateZ = translateNode.attribute("z").as_float();
-        }
-
-        pugi::xml_node rotateNode = transformNode.child("rotate");
-        if (rotateNode) {
-            group.rotateAngle = rotateNode.attribute("angle").as_float();
-            group.rotateX = rotateNode.attribute("x").as_float();
-            group.rotateY = rotateNode.attribute("y").as_float();
-            group.rotateZ = rotateNode.attribute("z").as_float();
-        }
-
-        pugi::xml_node scaleNode = transformNode.child("scale");
-        if (scaleNode) {
-            group.scaleX = scaleNode.attribute("x").as_float();
-            group.scaleY = scaleNode.attribute("y").as_float();
-            group.scaleZ = scaleNode.attribute("z").as_float();
+        for (pugi::xml_node childNode = transformNode.first_child(); childNode; childNode = childNode.next_sibling()) {
+            if (std::string(childNode.name()) == "translate") {
+                transformations.push_back("translate");
+                transformations.push_back(childNode.attribute("x").as_string());
+                transformations.push_back(childNode.attribute("y").as_string());
+                transformations.push_back(childNode.attribute("z").as_string());
+            }else if (std::string(childNode.name()) == "rotate"){
+                transformations.push_back("rotate");
+                transformations.push_back(childNode.attribute("angle").as_string());
+                transformations.push_back(childNode.attribute("x").as_string());
+                transformations.push_back(childNode.attribute("y").as_string());
+                transformations.push_back(childNode.attribute("z").as_string());
+            }else if(std::string(childNode.name()) == "scale"){
+                transformations.push_back("scale");
+                transformations.push_back(childNode.attribute("x").as_string());
+                transformations.push_back(childNode.attribute("y").as_string());
+                transformations.push_back(childNode.attribute("z").as_string());
+            }
         }
     }
 
     pugi::xml_node modelsNode = groupNode.child("models");
     for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
-        std::string filename = modelNode.attribute("file").as_string();
-        group.files.push_back(filename);
+        transformations.push_back("figure");
+        transformations.push_back(modelNode.attribute("file").as_string());
     }
 
     pugi::xml_node groupsNode = groupNode.child("group");
     for (pugi::xml_node groupNode = groupsNode; groupNode; groupNode = groupNode.next_sibling("group")) {
-        Group new_group= processGroup_XML(groupNode);
-        group.children.push_front(new_group.id);
+        processGroup_XML(groupNode); 
     }
 
-    groupsList.push_front(group);
-    return group;
+    transformations.push_back("pop");
 }
 
 void read_XML(char* file_path){
@@ -212,6 +198,64 @@ void drawFigure(std::string figureFile){
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras++]); 
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras-1]);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, vertices);
+}
+
+void create_objects(void){
+    /* while(!transformations.empty()){
+        string next_operation = transformations.front();
+        transformations.pop_front();
+        cout << next_operation << endl;
+    } */
+
+    while(!transformations.empty()){
+        string next_operation = transformations.front();
+        transformations.pop_front();
+
+        if (next_operation=="push"){
+            glPushMatrix();
+        }else if (next_operation=="pop"){
+            glPopMatrix();
+        }else if (next_operation=="rotate"){
+            float angle = std::stof(transformations.front());
+            transformations.pop_front();
+            float x = std::stof(transformations.front());
+            transformations.pop_front();
+            float y = std::stof(transformations.front());
+            transformations.pop_front();
+            float z = std::stof(transformations.front());
+            transformations.pop_front();
+            glRotatef(angle,x,y,z);
+           
+        }else if (next_operation=="translate"){
+            float x = std::stof(transformations.front());
+            transformations.pop_front();
+            float y = std::stof(transformations.front());
+            transformations.pop_front();
+            float z = std::stof(transformations.front());
+            transformations.pop_front();
+            glTranslatef(x,y,z);
+           
+        }else if (next_operation=="scale"){
+            float x = std::stof(transformations.front());
+            transformations.pop_front();
+            float y = std::stof(transformations.front());
+            transformations.pop_front();
+            float z = std::stof(transformations.front());
+            transformations.pop_front();
+            glScalef(x,y,z);
+        }else if (next_operation=="figure"){
+            string fig = transformations.front();
+            transformations.pop_front();
+            drawFigure(fig);
+        }  
+
+    }
+    
+    
 }
 
 void renderScene(void) {
@@ -231,13 +275,8 @@ void renderScene(void) {
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    // VBOs
-    for (int i=0;i<numFiguras;i++){
-        glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
-        glVertexPointer(3, GL_FLOAT, 0, 0);
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
-    }
-
+    create_objects();
+    
     // Disable vertex array
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -290,6 +329,7 @@ void processKeys(unsigned char key, int xx, int yy) {
     glutPostRedisplay();
 }
 
+
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
 
@@ -327,12 +367,6 @@ int main(int argc, char *argv[]) {
 
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
-
-    for (Group group: groupsList){
-        for (const auto& file : group.files){
-            drawFigure(file);
-        }
-    }
 
     // Enter GLUT's main cycle
     glutMainLoop();
