@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <iostream>
+#include <cstring>
 #include "pugixml.hpp"
 #include <stdio.h>
 #include <list>
-#include <cstring>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -49,72 +49,63 @@ int numFiguras = 0;
 int vertices;
 
 //GroupsParser
-int groupCtd = 0;
-enum TransformationType {
-    TRANSLATION,
-    ROTATION,
+enum Type{
+    TRANSLATE,
+    ROTATE,
     SCALE
 };
 struct Transformation {
-    TransformationType type;
-    float x, y, z, angle;
+    float x, y, z, angle = 0;
+    Type type;
 };
 struct Group {
-    int id;
     std::list<std::string> files;
-    std::list<Transformation> transformations; // Lista de transformações
+    std::list<Transformation> transformations;
     std::list<Group> children;
 };
 Group mainGroup;
 
 Group processGroup_XML(pugi::xml_node groupNode){
     Group group;
-    group.id = groupCtd++;
-
     for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
-        for (pugi::xml_node transformNodeChild = transformNode.first_child(); transformNodeChild; transformNodeChild = transformNodeChild.next_sibling()) {              
-            Transformation transformation;
-
-            // Process scale node
-            if (std::strcmp(transformNodeChild.name(), "scale") == 0) {
-                transformation.type = SCALE;
-                transformation.x = transformNodeChild.attribute("x").as_float();
-                transformation.y = transformNodeChild.attribute("y").as_float();
-                transformation.z = transformNodeChild.attribute("z").as_float();
-                group.transformations.push_back(transformation);
-            }
-
-            // Process rotation node
-            if (std::strcmp(transformNodeChild.name(), "rotate") == 0) {
-                transformation.type = ROTATION;
-                transformation.angle = transformNodeChild.attribute("angle").as_float();
-                transformation.x = transformNodeChild.attribute("x").as_float();
-                transformation.y = transformNodeChild.attribute("y").as_float();
-                transformation.z = transformNodeChild.attribute("z").as_float();
-                group.transformations.push_back(transformation);
-            }
-
-            // Process translation node
-            if (std::strcmp(transformNodeChild.name(), "translate") == 0) {
-                transformation.type = TRANSLATION;
-                transformation.x = transformNodeChild.attribute("x").as_float();
-                transformation.y = transformNodeChild.attribute("y").as_float();
-                transformation.z = transformNodeChild.attribute("z").as_float();
-                group.transformations.push_back(transformation);
+        Transformation transformation;
+        for (pugi::xml_node childNode = transformNode.first_child(); childNode; childNode = childNode.next_sibling()) {
+            if (!childNode.empty()){
+                if (std::strcmp(childNode.name(),"translate") == 0) {
+                    transformation.type = TRANSLATE;
+                    transformation.x = childNode.attribute("x").as_float();
+                    transformation.y = childNode.attribute("y").as_float();
+                    transformation.z = childNode.attribute("z").as_float();
+                    group.transformations.push_back(transformation);    
+                }
+                else if (std::strcmp(childNode.name(),"rotate") == 0){
+                    transformation.type = ROTATE;
+                    transformation.angle = childNode.attribute("angle").as_float();
+                    transformation.x = childNode.attribute("x").as_float();
+                    transformation.y = childNode.attribute("y").as_float();
+                    transformation.z = childNode.attribute("z").as_float();
+                    group.transformations.push_back(transformation);    
+                }
+                else if(std::strcmp(childNode.name(),"scale") == 0){
+                    transformation.type = SCALE;
+                    transformation.x = childNode.attribute("x").as_float();
+                    transformation.y = childNode.attribute("y").as_float();
+                    transformation.z = childNode.attribute("z").as_float();
+                    group.transformations.push_back(transformation);
+                }
             }
         }
     }
 
     pugi::xml_node modelsNode = groupNode.child("models");
     for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
-        std::string filename = modelNode.attribute("file").as_string();
-        group.files.push_back(filename);
+        group.files.push_back(modelNode.attribute("file").as_string());
     }
 
     pugi::xml_node groupsNode = groupNode.child("group");
-    for (pugi::xml_node groupNode = groupsNode; groupNode; groupNode = groupNode.next_sibling("group")) {
-        Group new_group= processGroup_XML(groupNode);
-        group.children.push_back(new_group);
+    for (pugi::xml_node childGroupNode = groupsNode; childGroupNode; childGroupNode = childGroupNode.next_sibling("group")) {
+        Group childGroup = processGroup_XML(childGroupNode); 
+        group.children.push_back(childGroup);
     }
 
     return group;
@@ -151,9 +142,9 @@ void read_XML(char* file_path){
         camProjectionNear = cameraNode.child("projection").attribute("near").as_float();
         camProjectionFar = cameraNode.child("projection").attribute("far").as_float();
         
-        // Processar modelos
+        // Processar Groups
         pugi::xml_node groupNode = rootNode.child("group");
-        mainGroup=processGroup_XML(groupNode);
+        mainGroup = processGroup_XML(groupNode);
     }
 }
 
@@ -209,8 +200,7 @@ void drawFigure(std::string figureFile){
     std::string linha;
     std::getline(file, linha);
 
-    if (vertices<std::stoi(linha)) vertices = std::stoi(linha);
-    //std::cout << vertices << std::endl;
+    if (vertices < std::stoi(linha)) vertices = std::stoi(linha);
 
     std::vector<float> vertexB;
 
@@ -231,16 +221,16 @@ void drawFigure(std::string figureFile){
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
 }
 
-void applyTransformations(Group group, int& index) {
+void processTransformations(Group group, int& index){
     for (Transformation transformation : group.transformations){
-        if (transformation.type == TRANSLATION){
-            glTranslatef(transformation.x, transformation.y, transformation.z);
+        if (transformation.type == TRANSLATE){
+            glTranslatef(transformation.x,transformation.y,transformation.z);
+        }
+        else if (transformation.type == ROTATE){
+            glRotatef(transformation.angle,transformation.x,transformation.y,transformation.z);
         }
         else if (transformation.type == SCALE){
-            glScalef(transformation.x, transformation.y, transformation.z);
-        }
-        else if (transformation.type == ROTATION){
-            glRotatef(transformation.angle,transformation.x, transformation.y, transformation.z);
+            glScalef(transformation.x,transformation.y,transformation.z);
         }
     }
 
@@ -250,9 +240,9 @@ void applyTransformations(Group group, int& index) {
         glDrawArrays(GL_TRIANGLES, 0, vertices);
     }
 
-    for (Group child : group.children) {
+    for (Group child : group.children){
         glPushMatrix();
-        applyTransformations(child, index);
+        processTransformations(child,index);
         glPopMatrix();
     }
 }
@@ -274,9 +264,9 @@ void renderScene(void) {
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    // VBOs
+    //Transformations
     int index = 0;
-    applyTransformations(mainGroup, index);
+    processTransformations(mainGroup, index);
 
     // Disable vertex array
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -330,13 +320,13 @@ void processKeys(unsigned char key, int xx, int yy) {
     glutPostRedisplay();
 }
 
-void processGroups(Group group){ 
-    for (const auto& file : group.files){
+void processVBOs(Group group){
+    for (const auto& file : group.files) {
         drawFigure(file);
     }
 
-    for (Group children : group.children){
-        processGroups(children);
+    for (Group child : group.children){
+        processVBOs(child);
     }
 }
 
@@ -377,8 +367,7 @@ int main(int argc, char *argv[]) {
 
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
-
-    processGroups(mainGroup);
+    processVBOs(mainGroup);
 
     // Enter GLUT's main cycle
     glutMainLoop();
