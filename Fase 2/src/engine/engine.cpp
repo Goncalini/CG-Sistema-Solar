@@ -244,7 +244,7 @@ void applyTransformations(Group group, int& index) {
         }
     }
 
-    if (group.files.size() > 0) {
+    for (std::string file : group.files){
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
