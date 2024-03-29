@@ -249,6 +249,12 @@ void applyTransformations(Group group, int& index) {
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
     }
+
+    for (Group child : group.children) {
+        glPushMatrix();
+        applyTransformations(child, index);
+        glPopMatrix();
+    }
 }
 
 void renderScene(void) {
@@ -271,18 +277,6 @@ void renderScene(void) {
     // VBOs
     int index = 0;
     applyTransformations(mainGroup, index);
-
-    for (Group child : mainGroup.children) {
-        glPushMatrix();
-        applyTransformations(child, index);
-
-        for (Group grandChild : child.children) {
-            glPushMatrix();
-            applyTransformations(grandChild, index);
-            glPopMatrix();
-        }
-        glPopMatrix();
-    }
 
     // Disable vertex array
     glDisableClientState(GL_VERTEX_ARRAY);
