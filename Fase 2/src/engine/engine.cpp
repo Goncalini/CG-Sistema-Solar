@@ -213,6 +213,21 @@ void drawFigure(std::string figureFile){
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
 }
 
+void applyTransformations(Group group, int& index) {
+    if (group.rotateAngle != 0 || group.rotateX != 0 || group.rotateY != 0 || group.rotateZ != 0)
+        glRotatef(group.rotateAngle, group.rotateX, group.rotateY, group.rotateZ);
+    if (group.translateX != 0 || group.translateY != 0 || group.translateZ != 0)
+        glTranslatef(group.translateX, group.translateY, group.translateZ);
+    if (group.scaleX != 0 || group.scaleY != 0 || group.scaleZ != 0)
+        glScalef(group.scaleX, group.scaleY, group.scaleZ);
+
+    if (group.files.size() > 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        glDrawArrays(GL_TRIANGLES, 0, vertices);
+    }
+}
+
 void renderScene(void) {
     // Clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -232,52 +247,15 @@ void renderScene(void) {
 
     // VBOs
     int index = 0;
+    applyTransformations(mainGroup, index);
 
-    if (mainGroup.rotateAngle!=0 || mainGroup.rotateX!=0 || mainGroup.rotateY!=0 || mainGroup.rotateZ!=0)
-        glRotatef(mainGroup.rotateAngle,mainGroup.rotateX,mainGroup.rotateY,mainGroup.rotateZ);
-    if (mainGroup.translateX!=0 || mainGroup.translateY!=0 || mainGroup.translateZ!=0) 
-        glTranslatef(mainGroup.translateX,mainGroup.translateY,mainGroup.translateZ);
-    if (mainGroup.scaleX!=0 || mainGroup.scaleY!=0 || mainGroup.scaleZ!=0) 
-        glScalef(mainGroup.scaleX,mainGroup.scaleY,mainGroup.scaleZ);
-
-    if (mainGroup.files.size()>0){
-        glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
-        glVertexPointer(3, GL_FLOAT, 0, 0);
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
-    }
-
-    for (Group child : mainGroup.children){
+    for (Group child : mainGroup.children) {
         glPushMatrix();
+        applyTransformations(child, index);
 
-        if (child.rotateAngle!=0 || child.rotateX!=0 || child.rotateY!=0 || child.rotateZ!=0)
-            glRotatef(child.rotateAngle,child.rotateX,child.rotateY,child.rotateZ);
-        if (child.translateX!=0 || child.translateY!=0 || child.translateZ!=0) 
-            glTranslatef(child.translateX,child.translateY,child.translateZ);
-        if (child.scaleX!=0 || child.scaleY!=0 || child.scaleZ!=0) 
-            glScalef(child.scaleX,child.scaleY,child.scaleZ);
-
-        if (child.files.size()>0){
-            glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
-            glVertexPointer(3, GL_FLOAT, 0, 0);
-            glDrawArrays(GL_TRIANGLES, 0, vertices);
-        }
-
-        for (Group grandChild : child.children){
-            glPushMatrix(); 
-
-            if (grandChild.files.size()>0){
-                if (grandChild.rotateAngle!=0 || grandChild.rotateX!=0 || grandChild.rotateY!=0 || grandChild.rotateZ!=0)
-                    glRotatef(grandChild.rotateAngle,grandChild.rotateX,grandChild.rotateY,grandChild.rotateZ);
-                if (grandChild.translateX!=0 || grandChild.translateY!=0 || grandChild.translateZ!=0) 
-                    glTranslatef(grandChild.translateX,grandChild.translateY,grandChild.translateZ);
-                if (grandChild.scaleX!=0 || grandChild.scaleY!=0 || grandChild.scaleZ!=0) 
-                    glScalef(grandChild.scaleX,grandChild.scaleY,grandChild.scaleZ);
-            }
-
-            glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
-            glVertexPointer(3, GL_FLOAT, 0, 0);
-            glDrawArrays(GL_TRIANGLES, 0, vertices);
-
+        for (Group grandChild : child.children) {
+            glPushMatrix();
+            applyTransformations(grandChild, index);
             glPopMatrix();
         }
         glPopMatrix();
