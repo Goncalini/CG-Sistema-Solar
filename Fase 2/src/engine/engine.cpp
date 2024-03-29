@@ -70,29 +70,27 @@ Group processGroup_XML(pugi::xml_node groupNode){
     for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
         Transformation transformation;
         for (pugi::xml_node childNode = transformNode.first_child(); childNode; childNode = childNode.next_sibling()) {
-            if (!childNode.empty()){
-                if (std::strcmp(childNode.name(),"translate") == 0) {
-                    transformation.type = TRANSLATE;
-                    transformation.x = childNode.attribute("x").as_float();
-                    transformation.y = childNode.attribute("y").as_float();
-                    transformation.z = childNode.attribute("z").as_float();
-                    group.transformations.push_back(transformation);    
-                }
-                else if (std::strcmp(childNode.name(),"rotate") == 0){
-                    transformation.type = ROTATE;
-                    transformation.angle = childNode.attribute("angle").as_float();
-                    transformation.x = childNode.attribute("x").as_float();
-                    transformation.y = childNode.attribute("y").as_float();
-                    transformation.z = childNode.attribute("z").as_float();
-                    group.transformations.push_back(transformation);    
-                }
-                else if(std::strcmp(childNode.name(),"scale") == 0){
-                    transformation.type = SCALE;
-                    transformation.x = childNode.attribute("x").as_float();
-                    transformation.y = childNode.attribute("y").as_float();
-                    transformation.z = childNode.attribute("z").as_float();
-                    group.transformations.push_back(transformation);
-                }
+            if (std::strcmp(childNode.name(),"translate") == 0) {
+                transformation.type = TRANSLATE;
+                transformation.x = childNode.attribute("x").as_float();
+                transformation.y = childNode.attribute("y").as_float();
+                transformation.z = childNode.attribute("z").as_float();
+                group.transformations.push_back(transformation);    
+            }
+            else if (std::strcmp(childNode.name(),"rotate") == 0){
+                transformation.type = ROTATE;
+                transformation.angle = childNode.attribute("angle").as_float();
+                transformation.x = childNode.attribute("x").as_float();
+                transformation.y = childNode.attribute("y").as_float();
+                transformation.z = childNode.attribute("z").as_float();
+                group.transformations.push_back(transformation);    
+            }
+            else if(std::strcmp(childNode.name(),"scale") == 0){
+                transformation.type = SCALE;
+                transformation.x = childNode.attribute("x").as_float();
+                transformation.y = childNode.attribute("y").as_float();
+                transformation.z = childNode.attribute("z").as_float();
+                group.transformations.push_back(transformation);
             }
         }
     }
