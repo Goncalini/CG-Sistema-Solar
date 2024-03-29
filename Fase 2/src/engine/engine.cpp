@@ -3,6 +3,7 @@
 #include "pugixml.hpp"
 #include <stdio.h>
 #include <list>
+#include <cstring>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -49,12 +50,19 @@ int vertices;
 
 //GroupsParser
 int groupCtd = 0;
+enum TransformationType {
+    TRANSLATION,
+    ROTATION,
+    SCALE
+};
+struct Transformation {
+    TransformationType type;
+    float x, y, z, angle;
+};
 struct Group {
     int id;
     std::list<std::string> files;
-    float translateX = 0, translateY = 0, translateZ = 0;
-    float rotateAngle = 0, rotateX = 0, rotateY = 0, rotateZ = 0;
-    float scaleX = 0, scaleY = 0, scaleZ = 0; 
+    std::list<Transformation> transformations; // Lista de transformações
     std::list<Group> children;
 };
 Group mainGroup;
@@ -64,26 +72,36 @@ Group processGroup_XML(pugi::xml_node groupNode){
     group.id = groupCtd++;
 
     for (pugi::xml_node transformNode = groupNode.child("transform"); transformNode; transformNode = transformNode.next_sibling("transform")) {
-        pugi::xml_node translateNode = transformNode.child("translate");
-        if (translateNode) {
-            group.translateX = translateNode.attribute("x").as_float();
-            group.translateY = translateNode.attribute("y").as_float();
-            group.translateZ = translateNode.attribute("z").as_float();
-        }
+        for (pugi::xml_node transformNodeChild = transformNode.first_child(); transformNodeChild; transformNodeChild = transformNodeChild.next_sibling()) {              
+            Transformation transformation;
 
-        pugi::xml_node rotateNode = transformNode.child("rotate");
-        if (rotateNode) {
-            group.rotateAngle = rotateNode.attribute("angle").as_float();
-            group.rotateX = rotateNode.attribute("x").as_float();
-            group.rotateY = rotateNode.attribute("y").as_float();
-            group.rotateZ = rotateNode.attribute("z").as_float();
-        }
+            // Process scale node
+            if (std::strcmp(transformNodeChild.name(), "scale") == 0) {
+                transformation.type = SCALE;
+                transformation.x = transformNodeChild.attribute("x").as_float();
+                transformation.y = transformNodeChild.attribute("y").as_float();
+                transformation.z = transformNodeChild.attribute("z").as_float();
+                group.transformations.push_back(transformation);
+            }
 
-        pugi::xml_node scaleNode = transformNode.child("scale");
-        if (scaleNode) {
-            group.scaleX = scaleNode.attribute("x").as_float();
-            group.scaleY = scaleNode.attribute("y").as_float();
-            group.scaleZ = scaleNode.attribute("z").as_float();
+            // Process rotation node
+            if (std::strcmp(transformNodeChild.name(), "rotate") == 0) {
+                transformation.type = ROTATION;
+                transformation.angle = transformNodeChild.attribute("angle").as_float();
+                transformation.x = transformNodeChild.attribute("x").as_float();
+                transformation.y = transformNodeChild.attribute("y").as_float();
+                transformation.z = transformNodeChild.attribute("z").as_float();
+                group.transformations.push_back(transformation);
+            }
+
+            // Process translation node
+            if (std::strcmp(transformNodeChild.name(), "translate") == 0) {
+                transformation.type = TRANSLATION;
+                transformation.x = transformNodeChild.attribute("x").as_float();
+                transformation.y = transformNodeChild.attribute("y").as_float();
+                transformation.z = transformNodeChild.attribute("z").as_float();
+                group.transformations.push_back(transformation);
+            }
         }
     }
 
@@ -214,12 +232,17 @@ void drawFigure(std::string figureFile){
 }
 
 void applyTransformations(Group group, int& index) {
-    if (group.rotateAngle != 0 || group.rotateX != 0 || group.rotateY != 0 || group.rotateZ != 0)
-        glRotatef(group.rotateAngle, group.rotateX, group.rotateY, group.rotateZ);
-    if (group.translateX != 0 || group.translateY != 0 || group.translateZ != 0)
-        glTranslatef(group.translateX, group.translateY, group.translateZ);
-    if (group.scaleX != 0 || group.scaleY != 0 || group.scaleZ != 0)
-        glScalef(group.scaleX, group.scaleY, group.scaleZ);
+    for (Transformation transformation : group.transformations){
+        if (transformation.type == TRANSLATION){
+            glTranslatef(transformation.x, transformation.y, transformation.z);
+        }
+        else if (transformation.type == SCALE){
+            glScalef(transformation.x, transformation.y, transformation.z);
+        }
+        else if (transformation.type == ROTATION){
+            glRotatef(transformation.angle,transformation.x, transformation.y, transformation.z);
+        }
+    }
 
     if (group.files.size() > 0) {
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
