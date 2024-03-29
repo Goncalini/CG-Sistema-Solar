@@ -52,12 +52,12 @@ int groupCtd = 0;
 struct Group {
     int id;
     std::list<std::string> files;
-    float translateX, translateY, translateZ;
-    float rotateAngle, rotateX, rotateY, rotateZ;
-    float scaleX, scaleY, scaleZ; 
-    std::list<int> children;
+    float translateX = 0, translateY = 0, translateZ = 0;
+    float rotateAngle = 0, rotateX = 0, rotateY = 0, rotateZ = 0;
+    float scaleX = 0, scaleY = 0, scaleZ = 0; 
+    std::list<Group> children;
 };
-std::list<Group> groupsList;
+Group mainGroup;
 
 Group processGroup_XML(pugi::xml_node groupNode){
     Group group;
@@ -96,8 +96,7 @@ Group processGroup_XML(pugi::xml_node groupNode){
     pugi::xml_node groupsNode = groupNode.child("group");
     for (pugi::xml_node groupNode = groupsNode; groupNode; groupNode = groupNode.next_sibling("group")) {
         Group new_group= processGroup_XML(groupNode);
-        group.children.push_back(new_group.id);
-        groupsList.push_back(new_group);
+        group.children.push_back(new_group);
     }
 
     return group;
@@ -136,7 +135,7 @@ void read_XML(char* file_path){
         
         // Processar modelos
         pugi::xml_node groupNode = rootNode.child("group");
-        groupsList.push_front(processGroup_XML(groupNode));
+        mainGroup=processGroup_XML(groupNode);
     }
 }
 
@@ -192,7 +191,7 @@ void drawFigure(std::string figureFile){
     std::string linha;
     std::getline(file, linha);
 
-    vertices = std::stoi(linha);
+    if (vertices<std::stoi(linha)) vertices = std::stoi(linha);
     //std::cout << vertices << std::endl;
 
     std::vector<float> vertexB;
@@ -232,10 +231,56 @@ void renderScene(void) {
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // VBOs
-    for (int i=0;i<numFiguras;i++){
-        glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
+    int index = 0;
+
+    if (mainGroup.rotateAngle!=0 || mainGroup.rotateX!=0 || mainGroup.rotateY!=0 || mainGroup.rotateZ!=0)
+        glRotatef(mainGroup.rotateAngle,mainGroup.rotateX,mainGroup.rotateY,mainGroup.rotateZ);
+    if (mainGroup.translateX!=0 || mainGroup.translateY!=0 || mainGroup.translateZ!=0) 
+        glTranslatef(mainGroup.translateX,mainGroup.translateY,mainGroup.translateZ);
+    if (mainGroup.scaleX!=0 || mainGroup.scaleY!=0 || mainGroup.scaleZ!=0) 
+        glScalef(mainGroup.scaleX,mainGroup.scaleY,mainGroup.scaleZ);
+
+    if (mainGroup.files.size()>0){
+        glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
+    }
+
+    for (Group child : mainGroup.children){
+        glPushMatrix();
+
+        if (child.rotateAngle!=0 || child.rotateX!=0 || child.rotateY!=0 || child.rotateZ!=0)
+            glRotatef(child.rotateAngle,child.rotateX,child.rotateY,child.rotateZ);
+        if (child.translateX!=0 || child.translateY!=0 || child.translateZ!=0) 
+            glTranslatef(child.translateX,child.translateY,child.translateZ);
+        if (child.scaleX!=0 || child.scaleY!=0 || child.scaleZ!=0) 
+            glScalef(child.scaleX,child.scaleY,child.scaleZ);
+
+        if (child.files.size()>0){
+            glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
+            glVertexPointer(3, GL_FLOAT, 0, 0);
+            glDrawArrays(GL_TRIANGLES, 0, vertices);
+        }
+
+        for (Group grandChild : child.children){
+            glPushMatrix(); 
+
+            if (grandChild.files.size()>0){
+                if (grandChild.rotateAngle!=0 || grandChild.rotateX!=0 || grandChild.rotateY!=0 || grandChild.rotateZ!=0)
+                    glRotatef(grandChild.rotateAngle,grandChild.rotateX,grandChild.rotateY,grandChild.rotateZ);
+                if (grandChild.translateX!=0 || grandChild.translateY!=0 || grandChild.translateZ!=0) 
+                    glTranslatef(grandChild.translateX,grandChild.translateY,grandChild.translateZ);
+                if (grandChild.scaleX!=0 || grandChild.scaleY!=0 || grandChild.scaleZ!=0) 
+                    glScalef(grandChild.scaleX,grandChild.scaleY,grandChild.scaleZ);
+            }
+
+            glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
+            glVertexPointer(3, GL_FLOAT, 0, 0);
+            glDrawArrays(GL_TRIANGLES, 0, vertices);
+
+            glPopMatrix();
+        }
+        glPopMatrix();
     }
 
     // Disable vertex array
@@ -290,6 +335,16 @@ void processKeys(unsigned char key, int xx, int yy) {
     glutPostRedisplay();
 }
 
+void processGroups(Group group){ 
+    for (const auto& file : group.files){
+        drawFigure(file);
+    }
+
+    for (Group children : group.children){
+        processGroups(children);
+    }
+}
+
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
 
@@ -328,15 +383,7 @@ int main(int argc, char *argv[]) {
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
 
-    for (Group group: groupsList){
-        std::cout <<"Grupo: " << group.id << std::endl;
-        for (int children : group.children){
-            std::cout <<"Filho: " << children << std::endl;
-        }
-        for (const auto& file : group.files){
-            drawFigure(file);
-        }
-    }
+    processGroups(mainGroup);
 
     // Enter GLUT's main cycle
     glutMainLoop();
