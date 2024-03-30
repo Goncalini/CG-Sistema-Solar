@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 # Project Name
-PROJECT(ProjetoCG)
+PROJECT(Fase2)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -30,6 +30,8 @@ add_library(
     ./generator/box.cpp
     ./generator/sphere.cpp
     ./generator/cone.cpp
+    ./generator/ring.cpp
+    ./generator/torus.cpp
 )
 
 # Associa a biblioteca das figuras e dos pontos aos executáveis

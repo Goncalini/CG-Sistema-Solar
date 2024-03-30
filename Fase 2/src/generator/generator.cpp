@@ -3,6 +3,8 @@
 #include "box.cpp"
 #include "sphere.cpp"
 #include "cone.cpp"
+#include "ring.cpp"
+#include "torus.cpp"
 #include "../utils/figura.hpp"
 #include "../utils/ponto.hpp"
 #include <string>
@@ -54,6 +56,33 @@ int main(int argc,char *argv[]) {
 			file_path = argv[6];
 
 			figura = generateCone(radius, height, slices, stacks);
+		}
+		//generator ring 2 3 4 ring.3d 
+		else if (strcmp(argv[1], "ring") == 0) {
+			float ri = std::stof(argv[2]);
+			float re = std::stof(argv[3]);
+			int slices = atoi(argv[4]);
+
+			file_path = argv[5];
+
+			figura = generateRing(ri, re, slices);
+		}
+		//generator torus 2 3 10 10 ring.3d 
+		else if (strcmp(argv[1], "torus") == 0) {
+			float ri = std::stof(argv[2]);
+			float re = std::stof(argv[3]);
+			int slices = atoi(argv[4]);
+			int stacks = atoi(argv[5]);
+			if (stacks < 2) {
+				std::cout << "Number of stacks invalid!\n";
+				return 1;
+			}
+			else {
+				file_path = argv[6];
+
+				figura = generateTorus(ri, re, slices, stacks);
+			}
+			
 		}
 		else {
 			std::cout << "Invalid graphic primitive\n";

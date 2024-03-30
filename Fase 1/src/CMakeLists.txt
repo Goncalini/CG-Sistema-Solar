@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 # Project Name
-PROJECT(ProjetoCG)
+PROJECT(Fase1)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
