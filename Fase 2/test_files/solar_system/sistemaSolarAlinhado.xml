@@ -19,7 +19,6 @@
         <!-- MERCÚRIO -->
         <group>
             <transform>
-                <rotate angle ="45" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Mercúrio-->
                 <translate x="24" y="0" z="0"/>
                 <scale x="0.2" y="0.2" z="0.2"/> <!-- Tamanho de Mercúrio -->
             </transform>
@@ -30,7 +29,6 @@
         <!-- VÉNUS -->
         <group>
             <transform>
-                <rotate angle ="89" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Vénus-->
                 <translate x="29" y="0" z="0"/>
                 <scale x="0.5" y="0.5" z="0.5"/> <!-- Tamanho de Vénus -->
             </transform>
@@ -41,7 +39,6 @@
         <!-- TERRA e LUA-->
         <group>
             <transform>
-                <rotate angle ="185" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol da Terra-->
                 <translate x="34" y="0" z="0"/>
             </transform>
             <!-- TERRA -->
@@ -67,7 +64,6 @@
         <!-- MARTE e LUAS-->
         <group>
             <transform>
-                <rotate angle ="240" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Marte-->
                 <translate x="39" y="0" z="0"/>
                 <scale x="0.3" y="0.3" z="0.3"/> <!-- Tamanho de Marte -->
             </transform>
@@ -101,8 +97,7 @@
         <!-- JÚPITER -->
         <group>
             <transform>
-                <rotate angle ="300" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Júpiter-->
-                <translate x="49" y="0" z="0"/>
+                <translate x="50" y="0" z="0"/>
                 <scale x="6" y="6" z="6"/> <!-- Tamanho de Júpiter -->
             </transform>
             <models>
@@ -112,7 +107,6 @@
         <!-- SATURNO -->
         <group>
             <transform>
-                <rotate angle ="30" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Saturno-->
                 <translate x="66" y="0" z="0"/>
             </transform>
             <group>
@@ -136,7 +130,6 @@
         <!-- ÚRANO -->
         <group>
             <transform>
-                <rotate angle ="200" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Úrano-->
                 <translate x="80" y="0" z="0"/>
                 <scale x="2" y="2" z="2"/> <!-- Tamanho de Úrano -->
             </transform>
@@ -147,7 +140,6 @@
         <!-- NEPTUNO -->
         <group>
             <transform>
-                <rotate angle ="150" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Neptuno-->
                 <translate x="90" y="0" z="0"/>
                 <scale x="2" y="2" z="2"/> <!-- Tamanho de Neptuno -->
             </transform>
