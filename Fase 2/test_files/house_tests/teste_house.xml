@@ -9,8 +9,11 @@
     
     <group>
 	    <group> 
+	    	<transform> 
+			<scale x="2" y="2" z="2" />
+		</transform>
 		<models> 
-		    <model file="box_2_2.3d" /> <!-- generator box 2 2 box_2_2.3d -->
+		    <model file="box_1_1.3d" /> <!-- generator box 1 1 box_1_1.3d -->
 		</models>
 	    </group> 
 	    
@@ -26,9 +29,10 @@
 	    <group> 
 		<transform> 
 			<translate x="4" y="0" z="0" />
+			<scale x="2" y="2" z="2" />
 		</transform>
 		<models> 
-		    <model file="box_2_2.3d" /> <!-- generator box 2 2 box_2_2.3d -->
+		    <model file="box_1_1.3d" /> <!-- generator box 1 1 box_1_1.3d -->
 		</models>
 	    </group>
 	    
