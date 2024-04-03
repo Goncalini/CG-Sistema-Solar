@@ -229,8 +229,10 @@ CMakeFiles/generator.dir/generator/generator.cpp.o: ../generator/generator.cpp \
   ../generator/cone.cpp \
   ../generator/ring.cpp \
   ../generator/torus.cpp \
-  ../generator/house.cpp
+  ../generator/roof.cpp
 
+
+../generator/roof.cpp:
 
 /usr/include/c++/11/tr1/riemann_zeta.tcc:
 
@@ -629,8 +631,6 @@ CMakeFiles/generator.dir/generator/generator.cpp.o: ../generator/generator.cpp \
 /usr/include/c++/11/bits/string_view.tcc:
 
 /usr/include/c++/11/bits/hash_bytes.h:
-
-../generator/house.cpp:
 
 ../utils/ponto.hpp:
 
