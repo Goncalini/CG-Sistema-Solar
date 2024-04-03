@@ -5,7 +5,8 @@
 #include "cone.cpp"
 #include "ring.cpp"
 #include "torus.cpp"
-#include "house.cpp"
+#include "roof.cpp"
+#include "piramid.cpp"
 #include "../utils/figura.hpp"
 #include "../utils/ponto.hpp"
 #include <string>
@@ -85,15 +86,25 @@ int main(int argc,char *argv[]) {
 			}
 
 		}
-		//generator house 2 house.3d 
-		else if (strcmp(argv[1], "house") == 0) {
+		//generator roof 2 2 2 roof.3d 
+		else if (strcmp(argv[1], "roof") == 0) {
 			int length = atoi(argv[2]);
-			int width = atoi(argv[3]);
-			int height = atoi(argv[4]);
+			int height = atoi(argv[3]);
+			int width = atoi(argv[4]);
 
 			file_path = argv[5];
 
-			figura = generateHouse(length,width,height);
+			figura = generateRoof(length,width,height);
+		}
+		//generator piramid 2 2 2 piramid.3d 
+		else if (strcmp(argv[1], "piramid") == 0) {
+			int length = atoi(argv[2]);
+			int height = atoi(argv[3]);
+			int width = atoi(argv[4]);
+
+			file_path = argv[5];
+
+			figura = generatePiramid(length,width,height);
 		}
 		else {
 			std::cout << "Invalid graphic primitive\n";

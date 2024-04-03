@@ -1,0 +1,49 @@
+<world> 
+    <window width="512" height="512" />
+    <camera> 
+	    <position x="5" y="6" z="15" />
+	    <lookAt x="0" y="0" z="0" />
+	    <up x="0" y="1" z="0" />
+        <projection fov="60" near="1" far="1000" /> 
+    </camera>
+    
+    <group>
+	    <group> 
+		<models> 
+		    <model file="box_2_2.3d" /> <!-- generator box 2 2 box_2_2.3d -->
+		</models>
+	    </group> 
+	    
+	    <group> 
+		<transform> 
+			<translate x="0" y="1" z="0" />
+		</transform>
+		<models> 
+		    <model file="roof_2_1_2.3d" /> <!-- generator roof 2 1 2 roof_2_1_2.3d -->
+		</models>
+	    </group>
+	    
+	    <group> 
+		<transform> 
+			<translate x="4" y="0" z="0" />
+		</transform>
+		<models> 
+		    <model file="box_2_2.3d" /> <!-- generator box 2 2 box_2_2.3d -->
+		</models>
+	    </group>
+	    
+	    <group> 
+		<transform> 
+			<translate x="4" y="1" z="0" />
+		</transform>
+		<models> 
+		    <model file="piramid_2_1_2.3d" /> <!-- generator piramid 2 1 2 piramid_2_1_2.3d -->
+		</models>
+	    </group>
+	
+	
+    </group> 
+
+    
+				
+</world>
