@@ -30,7 +30,6 @@ add_library(
     ./generator/box.cpp
     ./generator/sphere.cpp
     ./generator/cone.cpp
-    ./generator/ring.cpp
     ./generator/torus.cpp
 )
 

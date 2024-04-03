@@ -3,7 +3,6 @@
 #include "box.cpp"
 #include "sphere.cpp"
 #include "cone.cpp"
-#include "ring.cpp"
 #include "torus.cpp"
 #include "roof.cpp"
 #include "piramid.cpp"
@@ -59,17 +58,7 @@ int main(int argc,char *argv[]) {
 
 			figura = generateCone(radius, height, slices, stacks);
 		}
-		//generator ring 2 3 4 ring.3d 
-		else if (strcmp(argv[1], "ring") == 0) {
-			float ri = std::stof(argv[2]);
-			float re = std::stof(argv[3]);
-			int slices = atoi(argv[4]);
-
-			file_path = argv[5];
-
-			figura = generateRing(ri, re, slices);
-		}
-		//generator torus 2 3 10 10 ring.3d 
+		//generator torus 2 3 10 10 torus.3d 
 		else if (strcmp(argv[1], "torus") == 0) {
 			float ri = std::stof(argv[2]);
 			float re = std::stof(argv[3]);

@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wno-deprecated CMakeFiles/engine.dir/engine/engine.cpp.o -o engine  libutils_lib.a libfigures_lib.a libpugixml_lib.a /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/libGLU.so /usr/lib/x86_64-linux-gnu/libglut.so /usr/lib/x86_64-linux-gnu/libXmu.so /usr/lib/x86_64-linux-gnu/libXi.so /usr/lib/x86_64-linux-gnu/libGLEW.so 

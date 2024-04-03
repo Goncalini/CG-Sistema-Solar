@@ -8,7 +8,7 @@
     </camera>
 	<group> 
   		<models> 
-			<model file="torus_1_2_10_10.3d" /> <!-- generator sphere 1 10 10 sphere_1_10_10.3d -->
+			<model file="torus_1_2_10_10.3d" /> <!-- generator torus 1 2 10 10 torus_1_2_10_10.3d -->
  		</models>
  	</group>
 </world>
