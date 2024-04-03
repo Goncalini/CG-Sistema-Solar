@@ -3,6 +3,7 @@
 .idea
 src/CMakeCache.txt
 src/build/*
+src/Build/*
 
 # Prerequisites
 *.d
