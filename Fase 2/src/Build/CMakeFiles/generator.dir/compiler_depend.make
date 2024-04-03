@@ -229,8 +229,11 @@ CMakeFiles/generator.dir/generator/generator.cpp.o: ../generator/generator.cpp \
   ../generator/cone.cpp \
   ../generator/ring.cpp \
   ../generator/torus.cpp \
-  ../generator/roof.cpp
+  ../generator/roof.cpp \
+  ../generator/piramid.cpp
 
+
+../generator/piramid.cpp:
 
 ../generator/roof.cpp:
 
