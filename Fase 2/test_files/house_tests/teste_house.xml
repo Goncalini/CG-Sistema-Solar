@@ -11,45 +11,34 @@
 	    <group> 
 	    	<transform> 
 	    		<translate x="-4" y="0" z="0" />
-			<scale x="4" y="4" z="4" />
 		</transform>
 		<models> 
-		    <model file="box_1_1.3d" /> <!-- generator box 1 1 box_1_1.3d -->
+		    <model file="parallelepiped_4_4_4.3d" /> <!-- generator parallelepiped 4 4 4 parallelepiped_4_4_4.3d -->
 		</models>
 	    </group> 
 	    
 	    <group> 
 		<transform> 
-			<translate x="-4" y="2" z="0" />
+			<translate x="-4" y="4" z="0" />
 		</transform>
 		<models> 
 		    <model file="roof_4_2_4.3d" /> <!-- generator roof 4 2 4 roof_4_2_4.3d -->
 		</models>
 	    </group>
-	    
-	    <group> 
-		<transform> 
-			<translate x="-2" y="3" z="0" />
-		</transform>
-		<models> 
-		    <model file="box_1_1.3d" /> <!-- generator roof 4 2 4 roof_4_2_4.3d -->
-		</models>
-	    </group>
-	    
+	   
 	    
 	    <group> 
 		<transform> 
 			<translate x="4" y="0" z="0" />
-			<scale x="4" y="4" z="4" />
 		</transform>
 		<models> 
-		    <model file="box_1_1.3d" /> <!-- generator box 1 1 box_1_1.3d -->
+		    <model file="parallelepiped_4_4_4.3d" /> <!-- generator parallelepiped 4 4 4 parallelepiped_4_4_4.3d -->
 		</models>
 	    </group>
 	    
 	    <group> 
 		<transform> 
-			<translate x="4" y="2" z="0" />
+			<translate x="4" y="4" z="0" />
 		</transform>
 		<models> 
 		    <model file="piramid_4_2_4.3d" /> <!-- generator piramid 4 2 4 piramid_4_2_4.3d -->
