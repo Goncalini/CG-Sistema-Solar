@@ -10,7 +10,7 @@
     <group>
 	    <group> 
 		<models> 
-		    <model file="parallelepiped_4_4_4.3d" /> <!-- generator parallelepiped 4 4 4 parallelepiped_4_4_4.3d -->
+		    <model file="parallelepiped_1_2_1.3d" /> <!-- generator parallelepiped 1 2 1 parallelepiped_1_2_1.3d -->
 		</models>
 	    </group> 
     </group> 

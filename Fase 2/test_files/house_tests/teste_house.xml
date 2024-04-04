@@ -15,18 +15,26 @@
 		<models> 
 		    <model file="parallelepiped_4_4_4.3d" /> <!-- generator parallelepiped 4 4 4 parallelepiped_4_4_4.3d -->
 		</models>
+		<group> 
+			<transform> 
+				<translate x="0" y="4" z="0" />
+			</transform>
+			<models> 
+			    <model file="roof_4_2_4.3d" /> <!-- generator roof 4 2 4 roof_4_2_4.3d -->
+			</models>
+			<group> 
+				<transform> 
+					<scale x="0.8" y="1" z="0.8" />
+					<translate x="1.25" y="0.25" z="0" />
+				</transform>
+				<models> 
+				    <model file="parallelepiped_1_2_1.3d" /> <!-- generator parallelepiped 1 2 1 parallelepiped_1_2_1.3d -->
+				</models>
+			</group> 
+		</group>
 	    </group> 
 	    
-	    <group> 
-		<transform> 
-			<translate x="-4" y="4" z="0" />
-		</transform>
-		<models> 
-		    <model file="roof_4_2_4.3d" /> <!-- generator roof 4 2 4 roof_4_2_4.3d -->
-		</models>
-	    </group>
 	   
-	    
 	    <group> 
 		<transform> 
 			<translate x="4" y="0" z="0" />
@@ -34,16 +42,26 @@
 		<models> 
 		    <model file="parallelepiped_4_4_4.3d" /> <!-- generator parallelepiped 4 4 4 parallelepiped_4_4_4.3d -->
 		</models>
+		<group> 
+			<transform> 
+				<translate x="0" y="4" z="0" />
+			</transform>
+			<models> 
+			    <model file="piramid_4_2_4.3d" /> <!-- generator piramid 4 2 4 piramid_4_2_4.3d -->
+			</models>
+			<group> 
+				<transform> 
+					<scale x="0.8" y="1" z="0.8" />
+					<translate x="1.25" y="0.25" z="0" />
+				</transform>
+				<models> 
+				    <model file="parallelepiped_1_2_1.3d" /> <!-- generator parallelepiped 1 2 1 parallelepiped_1_2_1.3d -->
+				</models>
+			</group>
+		</group> 
 	    </group>
 	    
-	    <group> 
-		<transform> 
-			<translate x="4" y="4" z="0" />
-		</transform>
-		<models> 
-		    <model file="piramid_4_2_4.3d" /> <!-- generator piramid 4 2 4 piramid_4_2_4.3d -->
-		</models>
-	    </group>
+	    
 	
 	
     </group> 
