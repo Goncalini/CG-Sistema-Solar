@@ -6,6 +6,7 @@
 #include "torus.cpp"
 #include "roof.cpp"
 #include "piramid.cpp"
+#include "parallelepiped.cpp"
 #include "../utils/figura.hpp"
 #include "../utils/ponto.hpp"
 #include <string>
@@ -94,6 +95,17 @@ int main(int argc,char *argv[]) {
 			file_path = argv[5];
 
 			figura = generatePiramid(length,width,height);
+		}
+
+		//generator parallelepiped 2 2 2 piramid.3d 
+		else if (strcmp(argv[1], "parallelepiped") == 0) {
+			int length = atoi(argv[2]);
+			int height = atoi(argv[3]);
+			int width = atoi(argv[4]);
+
+			file_path = argv[5];
+
+			figura = generateParallelepiped(length,width,height);
 		}
 		else {
 			std::cout << "Invalid graphic primitive\n";
