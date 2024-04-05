@@ -31,6 +31,9 @@ add_library(
     ./generator/sphere.cpp
     ./generator/cone.cpp
     ./generator/torus.cpp
+    ./generator/roof.cpp
+    ./generator/piramid.cpp
+    ./generator/parallelepiped.cpp
 )
 
 # Associa a biblioteca das figuras e dos pontos aos executáveis
