@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 # Project Name
-PROJECT(Fase2)
+PROJECT(Fase3)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -34,6 +34,7 @@ add_library(
     ./generator/roof.cpp
     ./generator/piramid.cpp
     ./generator/parallelepiped.cpp
+    ./generator/bezier.cpp
 )
 
 # Associa a biblioteca das figuras e dos pontos aos executáveis

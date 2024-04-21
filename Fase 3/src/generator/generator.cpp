@@ -7,6 +7,7 @@
 #include "roof.cpp"
 #include "piramid.cpp"
 #include "parallelepiped.cpp"
+#include "bezier.cpp"
 #include "../utils/figura.hpp"
 #include "../utils/ponto.hpp"
 #include <string>
@@ -106,6 +107,16 @@ int main(int argc,char *argv[]) {
 			file_path = argv[5];
 
 			figura = generateParallelepiped(length,width,height);
+		}
+		//generator patch teapot.patch 10 bezier_10.3d 
+		else if (strcmp(argv[1], "patch") == 0) {
+			const char* patch_file = argv[2];
+			int tesselation = atoi(argv[3]);
+
+			file_path = argv[4];
+
+			figura = generateSurface(patch_file, tesselation);
+
 		}
 		else {
 			std::cout << "Invalid graphic primitive\n";
