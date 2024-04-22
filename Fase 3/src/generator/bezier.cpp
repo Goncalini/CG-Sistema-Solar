@@ -114,7 +114,6 @@ Figura generateSurface(const char* patch_file, int tesselation) {
             M_U[i] += M[i][j] * u_array[j];
         }
     }
-
 	
     // leitura do ficheiro patch
     std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
@@ -138,6 +137,8 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 					result[i] += M_U[j] * ponto_base_Transposta_V[j];
 				}
 			}
+			std::cout << result[0] << std::endl;
+			addPonto(surface,newPonto(result[0], result[1], result[2]));
         }
     }
 
