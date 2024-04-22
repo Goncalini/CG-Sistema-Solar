@@ -76,9 +76,14 @@ vector<vector<vector<float>>> readPatchFile(const char* patch_file){
 //COMPLETAR!
 Figura generateSurface(const char* patch_file, int tesselation) {
 	Figura surface = Figura();
+	float x = 0.0f, y = 0.0f, dif = 1.0f / tesselation;
 
 	//leitura do ficheiro patch
 	vector<vector<vector<float>>> patches = readPatchFile(patch_file);
+	for (vector<vector<float>> patch : patches) {
+
+
+	}
 
 	return surface;
 }

@@ -19,6 +19,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#define SPHERICAL true
+#define FIRSTPERSON false
+
 using namespace std;
 
 int width;
@@ -41,6 +44,9 @@ float alfa = M_PI / 4;
 float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
+
+
+bool cameraMode;
 
 // VBOs
 int const numFigurasMax = 100;
