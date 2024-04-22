@@ -75,15 +75,63 @@ vector<vector<vector<float>>> readPatchFile(const char* patch_file){
 
 //COMPLETAR!
 Figura generateSurface(const char* patch_file, int tesselation) {
-	Figura surface = Figura();
-	float x = 0.0f, y = 0.0f, dif = 1.0f / tesselation;
+    Figura surface;
+    float x = 0.0f, y = 0.0f, dif = 1.0f / tesselation;
 
-	//leitura do ficheiro patch
-	vector<vector<vector<float>>> patches = readPatchFile(patch_file);
-	for (vector<vector<float>> patch : patches) {
+    // leitura do ficheiro patch
+    std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
+    for (const auto& patch : patches) {
+        for (const auto& row : patch) {
+            for (float value : row) {
+                std::cout << value << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
 
-
+	float M[4][4] = {{-1,3,-3,1},
+					 {3,-6,3,0},
+					 {-3,3,0,0},
+					 {1,0,0,0}};
+	
+	float transposta[4][4];
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			transposta[i][j] = M[j][i];
+		}
 	}
 
-	return surface;
+	//Vamos considerar os seguintes valores para v e u
+	float v=0.33;
+	float u=0.75;
+
+	float u_array[4] = {u * u * u, u * u, u, 1};
+	float v_array[4] = {{u * u * u}, 
+				  {u * u}, 
+				  {u}, 
+				  {1}};
+	
+
+	float Transposta_V[4] = {0};
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            Transposta_V[i] += transposta[i][j] * v_array[j];
+        }
+    }
+
+	float M_U[4] = {0};
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            M_U[i] += M[i][j] * u_array[j];
+        }
+    }
+
+	float matriz_teste[4][4] = {{},
+								{},
+								{},
+								{}};
+
+
+    return surface;
 }
