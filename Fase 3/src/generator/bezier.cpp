@@ -78,18 +78,6 @@ Figura generateSurface(const char* patch_file, int tesselation) {
     Figura surface;
     float x = 0.0f, y = 0.0f, dif = 1.0f / tesselation;
 
-    // leitura do ficheiro patch
-    std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
-    for (const auto& patch : patches) {
-        for (const auto& row : patch) {
-            for (float value : row) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
-
 	float M[4][4] = {{-1,3,-3,1},
 					 {3,-6,3,0},
 					 {-3,3,0,0},
@@ -127,10 +115,31 @@ Figura generateSurface(const char* patch_file, int tesselation) {
         }
     }
 
-	float matriz_teste[4][4] = {{},
-								{},
-								{},
-								{}};
+	
+    // leitura do ficheiro patch
+    std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
+    for (const auto& patch : patches) {
+        for (const auto& row : patch) {
+			float pontos_base[4][4]={{row[0],row[1],row[2],row[3]},
+									 {row[4],row[5],row[6],row[7]},
+									 {row[8],row[9],row[10],row[11]},
+									 {row[12],row[13],row[14],row[16]}};
+
+			float ponto_base_Transposta_V[4];
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < 4; ++j) {
+					ponto_base_Transposta_V[i] += pontos_base[i][j] * Transposta_V[j];
+				}
+			}
+
+			float result[4];
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < 4; ++j) {
+					result[i] += M_U[j] * ponto_base_Transposta_V[j];
+				}
+			}
+        }
+    }
 
 
     return surface;
