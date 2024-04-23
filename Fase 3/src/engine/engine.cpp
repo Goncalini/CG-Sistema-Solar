@@ -246,10 +246,18 @@ void drawFigure(std::string figureFile){
 void processTransformations(Group group, int& index){
     for (Transformation transformation : group.transformations){
         if (transformation.type == TRANSLATE){
-            glTranslatef(transformation.x,transformation.y,transformation.z);
+            if (transformation.time==0){
+                glTranslatef(transformation.x,transformation.y,transformation.z);
+            }else{
+                continue; //alterar e por a fazer uma translacao entre os pontos de time/numPontos em time/numPontos.
+            }
         }
         else if (transformation.type == ROTATE){
-            glRotatef(transformation.angle,transformation.x,transformation.y,transformation.z);
+            if (transformation.time==0){
+                glRotatef(transformation.angle,transformation.x,transformation.y,transformation.z);
+            }else{
+                continue; //por a fazer uma rotacao de 360º que demore time a ser realizada
+            }
         }
         else if (transformation.type == SCALE){
             glScalef(transformation.x,transformation.y,transformation.z);
