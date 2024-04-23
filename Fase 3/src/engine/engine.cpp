@@ -55,14 +55,19 @@ int numFiguras = 0;
 int vertices;
 
 //GroupsParser
+struct Point {
+    float x, y, z;
+};
 enum Type{
     TRANSLATE,
     ROTATE,
     SCALE
 };
-struct Transformation {
-    float x, y, z, angle = 0;
+struct Transformation { //nem todas as transformações usam todos os campos
     Type type;
+    float x, y, z, angle = 0, time;
+    bool align;
+    std::list<Point> points;
 };
 struct Group {
     std::list<std::string> files;
@@ -81,6 +86,18 @@ Group processGroup_XML(pugi::xml_node groupNode){
                 transformation.x = childNode.attribute("x").as_float();
                 transformation.y = childNode.attribute("y").as_float();
                 transformation.z = childNode.attribute("z").as_float();
+                transformation.time = childNode.attribute("time").as_float();
+                transformation.align = childNode.attribute("align").as_bool();
+
+                Point point;
+                for (pugi::xml_node pointNode = childNode.first_child(); pointNode; pointNode = pointNode.next_sibling()) {
+                    if (std::strcmp(pointNode.name(),"point") == 0) {
+                        point.x = pointNode.attribute("x").as_float();
+                        point.y = pointNode.attribute("y").as_float();
+                        point.z = pointNode.attribute("z").as_float();
+                        transformation.points.push_back(point);
+                    }
+                }
                 group.transformations.push_back(transformation);    
             }
             else if (std::strcmp(childNode.name(),"rotate") == 0){
@@ -89,6 +106,7 @@ Group processGroup_XML(pugi::xml_node groupNode){
                 transformation.x = childNode.attribute("x").as_float();
                 transformation.y = childNode.attribute("y").as_float();
                 transformation.z = childNode.attribute("z").as_float();
+                transformation.time = childNode.attribute("time").as_float();
                 group.transformations.push_back(transformation);    
             }
             else if(std::strcmp(childNode.name(),"scale") == 0){
