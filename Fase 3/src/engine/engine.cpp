@@ -249,14 +249,14 @@ void processTransformations(Group group, int& index){
             if (transformation.time==0){
                 glTranslatef(transformation.x,transformation.y,transformation.z);
             }else{
-                continue; //alterar e por a fazer uma translacao entre os pontos de time/numPontos em time/numPontos.
+                continue; //alterar e por a fazer uma translacao que demore time segundos a realizar uma volta completa na curva.
             }
         }
         else if (transformation.type == ROTATE){
             if (transformation.time==0){
                 glRotatef(transformation.angle,transformation.x,transformation.y,transformation.z);
             }else{
-                continue; //por a fazer uma rotacao de 360º que demore time a ser realizada
+                continue; //por a fazer uma rotacao de 360º sobre um dos eixos que demore time segundos a ser realizada
             }
         }
         else if (transformation.type == SCALE){
