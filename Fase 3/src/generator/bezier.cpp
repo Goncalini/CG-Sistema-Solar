@@ -133,10 +133,10 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 								{patch[12][2], patch[13][2], patch[14][2], patch[15][2]}
 								
 							};
-		for (int iTesselation=0;iTesselation<tesselation;iTesselation++){
+		for (int iTesselation=0;iTesselation<tesselation;iTesselation++){ 
 			for (int jTesselation=0;jTesselation<tesselation;jTesselation++){
-				float v=dif*jTesselation;
-				float u=dif*iTesselation;
+				float v=dif*iTesselation;
+				float u=dif*jTesselation;
 				
 				float u_array[4] = {u * u * u, u * u, u, 1};
 				float v_array[4] = {v * v * v, v * v, v, 1}; //Vertical

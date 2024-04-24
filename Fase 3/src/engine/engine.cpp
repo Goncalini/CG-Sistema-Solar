@@ -8,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "..\utils\matriz.hpp"
+#include "../utils/matriz.hpp"
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -317,7 +317,12 @@ void processTransformations(Group group, int& index){
     for (std::string file : group.files){
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
+        if (file.find("bezier") == 0) {
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, vertices);
+        }
+        
     }
 
     for (Group child : group.children){
