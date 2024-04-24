@@ -108,6 +108,20 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 			transpostaM[i][j] = M[j][i];
 		}
 	}
+
+	//Declaracao
+	float mulX[4];
+	float mulY[4];
+	float mulZ[4];
+
+	float M_mulX[4];
+	float M_mulY[4];
+	float M_mulZ[4];
+	
+	float result_X;
+	float result_Y;
+	float result_Z;
+
 	std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
 	for (std::vector<std::vector<float>> patch : patches) {
 		//Matrizes com as componentes, x y e z dos 16 pontos
@@ -145,16 +159,11 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 				multMatrixVector(*transpostaM, v_array, transpostaM_V);
 
 
-				float mulX[4];
-				float mulY[4];
-				float mulZ[4];
+				
 				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
 				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
 				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
 
-				float M_mulX[4];
-				float M_mulY[4];
-				float M_mulZ[4];
 				multMatrixVector(*M, mulX, M_mulX);
 				multMatrixVector(*M, mulY, M_mulY);
 				multMatrixVector(*M, mulZ, M_mulZ);
@@ -162,6 +171,30 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 				float result_X=multVectorVector(u_array, M_mulX);
 				float result_Y=multVectorVector(u_array, M_mulY);
 				float result_Z=multVectorVector(u_array, M_mulZ);
+				
+				addPonto(surface,newPonto(result_X, result_Y, result_Z));
+
+				//Adicionou um ponto, agora vai adicionar o abaixo dele
+
+				v=dif*(iTesselation+1);
+				v_array[0] = v * v * v;
+				v_array[1]=v*v;
+				v_array[2]=v;
+				v_array[3]=1;
+
+				multMatrixVector(*transpostaM, v_array, transpostaM_V);
+
+				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
+				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
+				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
+
+				multMatrixVector(*M, mulX, M_mulX);
+				multMatrixVector(*M, mulY, M_mulY);
+				multMatrixVector(*M, mulZ, M_mulZ);
+
+				result_X=multVectorVector(u_array, M_mulX);
+				result_Y=multVectorVector(u_array, M_mulY);
+				result_Z=multVectorVector(u_array, M_mulZ);
 				
 				addPonto(surface,newPonto(result_X, result_Y, result_Z));
 			}
