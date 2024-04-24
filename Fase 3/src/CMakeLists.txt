@@ -15,6 +15,8 @@ add_library(
 	./utils/ponto.hpp
 	./utils/figura.cpp
 	./utils/figura.hpp
+    ./utils/matriz.cpp
+	./utils/matriz.hpp
 )
 
 add_library(

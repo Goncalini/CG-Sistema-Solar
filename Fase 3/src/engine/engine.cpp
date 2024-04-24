@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "..\utils\matriz.hpp"
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -21,6 +22,8 @@
 
 #define SPHERICAL true
 #define FIRSTPERSON false
+
+#define tesselation 100.0
 
 using namespace std;
 
@@ -45,6 +48,8 @@ float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
+//Curvas de CatmullRomPoint
+float prev_y[3] = { 0,1,0 };
 
 bool cameraMode;
 
@@ -54,10 +59,10 @@ GLuint buffers[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
-//GroupsParser
-struct Point {
-    float x, y, z;
-};
+//GroupsParser -> passei para ja  para matriz.hpp!!
+//struct Point {
+//    float x, y, z;
+//};
 enum Type{
     TRANSLATE,
     ROTATE,
@@ -75,6 +80,7 @@ struct Group {
     std::list<Group> children;
 };
 Group mainGroup;
+
 
 Group processGroup_XML(pugi::xml_node groupNode){
     Group group;
@@ -243,20 +249,64 @@ void drawFigure(std::string figureFile){
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
 }
 
+void renderCatmullRomCurve(std::list<Point> points) {
+    float pos[3];
+    float derivada[3];
+    glBegin(GL_LINE_LOOP);
+    float gt;
+    //vai fazer [0,1[ de 0.01 por 0.01 - obtem uma curva com todos os segmentos
+    for (gt = 0; gt < 1; gt += 1.0 / tesselation) {
+        getGlobalCatmullRomPoint(gt, points, pos, derivada);
+        glVertex3f(pos[0], pos[1], pos[2]);
+    }
+    glEnd();
+}
+
 void processTransformations(Group group, int& index){
     for (Transformation transformation : group.transformations){
         if (transformation.type == TRANSLATE){
             if (transformation.time==0){
                 glTranslatef(transformation.x,transformation.y,transformation.z);
             }else{
-                continue; //alterar e por a fazer uma translacao que demore time segundos a realizar uma volta completa na curva.
+                
+                //alterar e por a fazer uma translacao que demore time segundos a realizar uma volta completa na curva.
+                float pos[3], deriv[3];
+                float gt = ( glutGet(GLUT_ELAPSED_TIME) / 1000.0) / transformation.time;
+        
+                getGlobalCatmullRomPoint(gt,transformation.points,pos,deriv);
+                renderCatmullRomCurve(transformation.points);
+
+                glTranslatef(pos[0], pos[1], pos[2]);
+                normalize(deriv);
+
+                float z[3];
+                cross(deriv, prev_y, z);
+                normalize(z);
+
+                float y[3];
+                cross(z, deriv, y);
+                normalize(y);
+
+                prev_y[0] = y[0];
+                prev_y[1] = y[1];
+                prev_y[2] = y[2];
+
+                float m[16]; //matriz 4*4
+                buildRotMatrix(deriv, y, z, m);
+
+                glMultMatrixf(m);
+
             }
         }
         else if (transformation.type == ROTATE){
             if (transformation.time==0){
                 glRotatef(transformation.angle,transformation.x,transformation.y,transformation.z);
             }else{
-                continue; //por a fazer uma rotacao de 360º sobre um dos eixos que demore time segundos a ser realizada
+                //por a fazer uma rotacao de 360º sobre um dos eixos que demore time segundos a ser realizada
+                double angle = 360.0 * (glutGet(GLUT_ELAPSED_TIME) / 1000.0) / transformation.time;
+                //para que nunca ultrapasse os 360º
+                while (angle > 360) angle -= 360;
+                glRotatef(angle, transformation.x, transformation.y, transformation.z);
             }
         }
         else if (transformation.type == SCALE){
@@ -303,6 +353,7 @@ void renderScene(void) {
 
     // End of frame
     glutSwapBuffers();
+    
 }
 
 
@@ -378,6 +429,7 @@ int main(int argc, char *argv[]) {
 
     // Required callback registry
     glutDisplayFunc(renderScene);
+    glutIdleFunc(renderScene);
     glutReshapeFunc(changeSize);
 
     glutKeyboardFunc(processKeys);
