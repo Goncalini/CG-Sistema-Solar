@@ -93,28 +93,37 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 
 	std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
 
-
 	for (std::vector<std::vector<float>> patch : patches) {
-		float pontos_base[4][4][3] = {
+		float pontos_base_antes[4][4][3] = {
 								{{patch[0][0], patch[0][1], patch[0][2]}, {patch[1][0], patch[1][1], patch[1][2]}, {patch[2][0], patch[2][1], patch[2][2]}, {patch[3][0], patch[3][1], patch[3][2]}},
 								{{patch[4][0], patch[4][1], patch[4][2]}, {patch[5][0], patch[5][1], patch[5][2]}, {patch[6][0], patch[6][1], patch[6][2]}, {patch[7][0], patch[7][1], patch[7][2]}},
 								{{patch[8][0], patch[8][1], patch[8][2]}, {patch[9][0], patch[9][1], patch[9][2]}, {patch[10][0], patch[10][1], patch[10][2]}, {patch[11][0], patch[11][1], patch[11][2]}},
 								{{patch[12][0], patch[12][1], patch[12][2]}, {patch[13][0], patch[13][1], patch[13][2]}, {patch[14][0], patch[14][1], patch[14][2]}, {patch[15][0], patch[15][1], patch[15][2]}}
 							};
+
+	float pontos_base[4][4][3];
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 3; k++) {
+                pontos_base[j][i][k] = pontos_base_antes[i][j][k];
+            }
+        }
+    }
+
 		for (int iTesselation=0;iTesselation<tesselation;iTesselation++){
 			std::vector<std::vector<float>> pontos_gerados;
 
 			for (int jTesselation=0;jTesselation<tesselation;jTesselation++){
 			
-				float v=dif*jTesselation;
-				float u=dif*iTesselation;
+				float v=dif*iTesselation;
+				float u=dif*jTesselation;
 				
 
 				float u_array[4] = {u * u * u, u * u, u, 1};
-				float v_array[4] = {{v * v * v}, 
-							{v * v}, 
-							{v}, 
-							{1}};
+				float v_array[4] = {v * v * v, 
+							v * v, 
+							v, 
+							1};
 
 
 				float Transposta_V[4] = {0};
