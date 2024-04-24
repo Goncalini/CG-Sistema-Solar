@@ -3,6 +3,12 @@
 #include <string>
 #include <sstream>
 
+//A transposta é igual a m
+float M[4][4] = {{-1.0f,3.0f,-3.0f,1.0f},
+					 {3.0f,-6.0f,3.0f,0.0f},
+					 {-3.0f,3.0f,0.0f,0.0f},
+					 {1.0f,0.0f,0.0f,0.0f}};
+
 void multMatrixVector(float *m, float *v, float *res) {
 	for (int j = 0; j < 4; ++j) {
 		res[j] = 0;
@@ -89,6 +95,40 @@ vector<vector<vector<float>>> readPatchFile(const char* patch_file){
 	return final;
 }
 
+void gerarPontos(float dif, int iTesselation, int jTesselation, float* pontos_base_x,float* pontos_base_y,float* pontos_base_z, float*result){
+	float v=dif*iTesselation;
+	float u=dif*jTesselation;
+				
+	float u_array[4] = {u * u * u, u * u, u, 1};
+	float v_array[4] = {v * v * v, v * v, v, 1}; //Vertical
+
+	float transpostaM_V[4]={0};
+	multMatrixVector(*M, v_array, transpostaM_V);
+
+	float mulX[4];
+	float mulY[4];
+	float mulZ[4];
+	multMatrixVector(pontos_base_x, transpostaM_V, mulX);
+	multMatrixVector(pontos_base_y, transpostaM_V, mulY);
+	multMatrixVector(pontos_base_z, transpostaM_V, mulZ);
+
+	float M_mulX[4];
+	float M_mulY[4];
+	float M_mulZ[4];
+	multMatrixVector(*M, mulX, M_mulX);
+	multMatrixVector(*M, mulY, M_mulY);
+	multMatrixVector(*M, mulZ, M_mulZ);
+
+	float result_X=multVectorVector(u_array, M_mulX);
+	float result_Y=multVectorVector(u_array, M_mulY);
+	float result_Z=multVectorVector(u_array, M_mulZ);
+
+	result[0]=result_X;
+	result[1]=result_Y;
+	result[2]=result_Z;
+				
+}
+
 
 
 //COMPLETAR!
@@ -96,31 +136,6 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 	
     Figura surface;
     float x = 0.0f, y = 0.0f, dif = 1.0f / tesselation;
-
-	float M[4][4] = {{-1.0f,3.0f,-3.0f,1.0f},
-					 {3.0f,-6.0f,3.0f,0.0f},
-					 {-3.0f,3.0f,0.0f,0.0f},
-					 {1.0f,0.0f,0.0f,0.0f}};
-
-	float transpostaM[4][4]={0};
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 4; ++j) {
-			transpostaM[i][j] = M[j][i];
-		}
-	}
-
-	//Declaracao
-	float mulX[4];
-	float mulY[4];
-	float mulZ[4];
-
-	float M_mulX[4];
-	float M_mulY[4];
-	float M_mulZ[4];
-	
-	float result_X;
-	float result_Y;
-	float result_Z;
 
 	std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
 	for (std::vector<std::vector<float>> patch : patches) {
@@ -149,114 +164,21 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 							};
 		for (int iTesselation=0;iTesselation<tesselation;iTesselation++){ 
 			for (int jTesselation=0;jTesselation<tesselation;jTesselation++){
-				float v=dif*iTesselation;
-				float u=dif*jTesselation;
-				
-				float u_array[4] = {u * u * u, u * u, u, 1};
-				float v_array[4] = {v * v * v, v * v, v, 1}; //Vertical
+				float ponto1[3];
+				float ponto2[3];
+				float ponto3[3];
+				float ponto4[3];
+				gerarPontos(dif, iTesselation, jTesselation, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto1);
+				gerarPontos(dif, iTesselation+1, jTesselation, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto2);
+				gerarPontos(dif, iTesselation, jTesselation+1, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto3);
+				gerarPontos(dif, iTesselation, jTesselation+1, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto4);
 
-				float transpostaM_V[4]={0};
-				multMatrixVector(*transpostaM, v_array, transpostaM_V);
-
-
-				
-				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
-				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
-				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
-
-				multMatrixVector(*M, mulX, M_mulX);
-				multMatrixVector(*M, mulY, M_mulY);
-				multMatrixVector(*M, mulZ, M_mulZ);
-
-				float result_X_1=multVectorVector(u_array, M_mulX);
-				float result_Y_1=multVectorVector(u_array, M_mulY);
-				float result_Z_1=multVectorVector(u_array, M_mulZ);
-				
-				addPonto(surface,newPonto(result_X_1, result_Y_1, result_Z_1));
-
-				//Adicionou um ponto, agora vai adicionar o abaixo dele
-
-				v=dif*(iTesselation+1);
-				v_array[0] = v * v * v;
-				v_array[1]=v*v;
-				v_array[2]=v;
-				v_array[3]=1;
-
-				multMatrixVector(*transpostaM, v_array, transpostaM_V);
-
-				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
-				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
-				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
-
-				multMatrixVector(*M, mulX, M_mulX);
-				multMatrixVector(*M, mulY, M_mulY);
-				multMatrixVector(*M, mulZ, M_mulZ);
-
-				float result_X_2=multVectorVector(u_array, M_mulX);
-				float result_Y_2=multVectorVector(u_array, M_mulY);
-				float result_Z_2=multVectorVector(u_array, M_mulZ);
-				
-				addPonto(surface,newPonto(result_X_2, result_Y_2, result_Z_2));
-
-				//Adionar o terceiro
-				v = dif*iTesselation;
-				u=dif*(jTesselation+1);
-				u_array[0]=u * u * u;
-				u_array[1]=u * u ;
-				u_array[2]=u ;
-				u_array[3]=1;
-				
-				v_array[0] = v * v * v;
-				v_array[1]=v*v;
-				v_array[2]=v;
-				v_array[3]=1;
-
-				multMatrixVector(*transpostaM, v_array, transpostaM_V);
-
-				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
-				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
-				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
-
-				multMatrixVector(*M, mulX, M_mulX);
-				multMatrixVector(*M, mulY, M_mulY);
-				multMatrixVector(*M, mulZ, M_mulZ);
-
-				float result_X_3=multVectorVector(u_array, M_mulX);
-				float result_Y_3=multVectorVector(u_array, M_mulY);
-				float result_Z_3=multVectorVector(u_array, M_mulZ);
-				
-				addPonto(surface,newPonto(result_X_3, result_Y_3, result_Z_3));
-
-				//Volta a adicioanr2
-				addPonto(surface,newPonto(result_X_2, result_Y_2, result_Z_2));
-
-				//Novo ponto
-				v = dif*(iTesselation+1);
-				u=dif*(jTesselation+1);
-				
-				v_array[0] = v * v * v;
-				v_array[1]=v*v;
-				v_array[2]=v;
-				v_array[3]=1;
-
-				multMatrixVector(*transpostaM, v_array, transpostaM_V);
-
-				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
-				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
-				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
-
-				multMatrixVector(*M, mulX, M_mulX);
-				multMatrixVector(*M, mulY, M_mulY);
-				multMatrixVector(*M, mulZ, M_mulZ);
-
-				float result_X_4=multVectorVector(u_array, M_mulX);
-				float result_Y_4=multVectorVector(u_array, M_mulY);
-				float result_Z_4=multVectorVector(u_array, M_mulZ);
-				
-				addPonto(surface,newPonto(result_X_4, result_Y_4, result_Z_4));
-
-				//volta a adicionar 3
-				addPonto(surface,newPonto(result_X_3, result_Y_3, result_Z_3));
+				addPonto(surface,newPonto(ponto1[0], ponto1[1], ponto1[2]));
+				addPonto(surface,newPonto(ponto2[0], ponto2[1], ponto2[2]));
+				addPonto(surface,newPonto(ponto3[0], ponto3[1], ponto3[2]));
+				addPonto(surface,newPonto(ponto2[0], ponto2[1], ponto2[2]));
+				addPonto(surface,newPonto(ponto4[0], ponto4[1], ponto4[2]));
+				addPonto(surface,newPonto(ponto3[0], ponto3[1], ponto3[2]));
 
 			}
 		}
