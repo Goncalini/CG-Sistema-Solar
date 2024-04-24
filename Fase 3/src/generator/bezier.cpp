@@ -3,6 +3,24 @@
 #include <string>
 #include <sstream>
 
+void multMatrixVector(float *m, float *v, float *res) {
+	for (int j = 0; j < 4; ++j) {
+		res[j] = 0;
+		for (int k = 0; k < 4; ++k) {
+			res[j] += v[k] * m[j * 4 + k];
+		}
+	}
+}
+
+
+float multVectorVector(float *v1, float *v2) {
+	float soma=0;
+    for (int i = 0; i < 4; ++i) {
+        soma += v1[i] * v2[i];
+    }
+	return soma;
+}
+
 
 //final = vetor com todos os patches existentes <vetor para um patch <vetor coordenadas pontos controlo float>>
 vector<vector<vector<float>>> readPatchFile(const char* patch_file){
@@ -84,83 +102,68 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 					 {-3.0f,3.0f,0.0f,0.0f},
 					 {1.0f,0.0f,0.0f,0.0f}};
 
-	float transposta[4][4]={0};
+	float transpostaM[4][4]={0};
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
-			transposta[i][j] = M[j][i];
+			transpostaM[i][j] = M[j][i];
 		}
 	}
-
 	std::vector<std::vector<std::vector<float>>> patches = readPatchFile(patch_file);
-
 	for (std::vector<std::vector<float>> patch : patches) {
-		float pontos_base_antes[4][4][3] = {
-								{{patch[0][0], patch[0][1], patch[0][2]}, {patch[1][0], patch[1][1], patch[1][2]}, {patch[2][0], patch[2][1], patch[2][2]}, {patch[3][0], patch[3][1], patch[3][2]}},
-								{{patch[4][0], patch[4][1], patch[4][2]}, {patch[5][0], patch[5][1], patch[5][2]}, {patch[6][0], patch[6][1], patch[6][2]}, {patch[7][0], patch[7][1], patch[7][2]}},
-								{{patch[8][0], patch[8][1], patch[8][2]}, {patch[9][0], patch[9][1], patch[9][2]}, {patch[10][0], patch[10][1], patch[10][2]}, {patch[11][0], patch[11][1], patch[11][2]}},
-								{{patch[12][0], patch[12][1], patch[12][2]}, {patch[13][0], patch[13][1], patch[13][2]}, {patch[14][0], patch[14][1], patch[14][2]}, {patch[15][0], patch[15][1], patch[15][2]}}
+		//Matrizes com as componentes, x y e z dos 16 pontos
+		float pontos_base_x[4][4] = {
+								{patch[0][0], patch[1][0], patch[2][0], patch[3][0]},
+								{patch[4][0], patch[5][0], patch[6][0], patch[7][0]},
+								{patch[8][0], patch[9][0], patch[10][0], patch[11][0]},
+								{patch[12][0], patch[13][0], patch[14][0], patch[15][0]}
+								
+							};
+		float pontos_base_y[4][4] = {
+								{patch[0][1], patch[1][1], patch[2][1], patch[3][1]},
+								{patch[4][1], patch[5][1], patch[6][1], patch[7][1]},
+								{patch[8][1], patch[9][1], patch[10][1], patch[11][1]},
+								{patch[12][1], patch[13][1], patch[14][1], patch[15][1]}
+								
 							};
 
-	float pontos_base[4][4][3];
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            for (int k = 0; k < 3; k++) {
-                pontos_base[j][i][k] = pontos_base_antes[i][j][k];
-            }
-        }
-    }
-
+		float pontos_base_z[4][4] = {
+								{patch[0][2], patch[1][2], patch[2][2], patch[3][2]},
+								{patch[4][2], patch[5][2], patch[6][2], patch[7][2]},
+								{patch[8][2], patch[9][2], patch[10][2], patch[11][2]},
+								{patch[12][2], patch[13][2], patch[14][2], patch[15][2]}
+								
+							};
 		for (int iTesselation=0;iTesselation<tesselation;iTesselation++){
-			std::vector<std::vector<float>> pontos_gerados;
-
 			for (int jTesselation=0;jTesselation<tesselation;jTesselation++){
-			
-				float v=dif*iTesselation;
-				float u=dif*jTesselation;
+				float v=dif*jTesselation;
+				float u=dif*iTesselation;
 				
-
 				float u_array[4] = {u * u * u, u * u, u, 1};
-				float v_array[4] = {v * v * v, 
-							v * v, 
-							v, 
-							1};
+				float v_array[4] = {v * v * v, v * v, v, 1}; //Vertical
+
+				float transpostaM_V[4]={0};
+				multMatrixVector(*transpostaM, v_array, transpostaM_V);
 
 
-				float Transposta_V[4] = {0};
-				for (int i = 0; i < 4; ++i) {
-					for (int j = 0; j < 4; ++j) {
-						Transposta_V[i] += transposta[i][j] * v_array[j];
-					}
-				}
-			
-				float U_M[4] = {0};
-				for (int i = 0; i < 4; ++i) {
-					for (int j = 0; j < 4; ++j) {
-						U_M[i] += u_array[j] * M[j][i];
-					}
-				}
+				float mulX[4];
+				float mulY[4];
+				float mulZ[4];
+				multMatrixVector(*pontos_base_x, transpostaM_V, mulX);
+				multMatrixVector(*pontos_base_y, transpostaM_V, mulY);
+				multMatrixVector(*pontos_base_z, transpostaM_V, mulZ);
 
-				float ponto_base_Transposta_V[4][3]={0};
-				for (int i = 0; i < 4; ++i) {
-					for (int j = 0; j < 3; ++j) {
-						for (int k = 0; k < 4; ++k) {
-							std::cout << pontos_base[i][j][k]<< std::endl;
-							std::cout <<Transposta_V[j]<< std::endl;
-							std::cout << '\n' << std::endl;
-							ponto_base_Transposta_V[i][j]+= pontos_base[i][k][j] * Transposta_V[k];
-						}
-					}
-				}
+				float M_mulX[4];
+				float M_mulY[4];
+				float M_mulZ[4];
+				multMatrixVector(*M, mulX, M_mulX);
+				multMatrixVector(*M, mulY, M_mulY);
+				multMatrixVector(*M, mulZ, M_mulZ);
 
-				float result[4]={0};
-				for (int i = 0; i < 4; ++i) {
-					for(int j=0;j<4;j++){
-						result[i] = ponto_base_Transposta_V[j][i] * U_M[j];
-					}
-				}
+				float result_X=multVectorVector(u_array, M_mulX);
+				float result_Y=multVectorVector(u_array, M_mulY);
+				float result_Z=multVectorVector(u_array, M_mulZ);
 				
-				addPonto(surface,newPonto(result[0], result[1], result[2]));
-				//pontos_gerados.push_back({result[0], result[1], result[2]});
+				addPonto(surface,newPonto(result_X, result_Y, result_Z));
 			}
 		}
 
