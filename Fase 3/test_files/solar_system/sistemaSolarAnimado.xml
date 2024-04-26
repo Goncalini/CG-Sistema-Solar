@@ -10,7 +10,7 @@
         <!-- SOL -->
         <group>
             <transform>
-                    <scale x="20" y="20" z="20"/> <!-- Tamanho do Sol -->
+                    <scale x="18" y="18" z="18"/> <!-- Tamanho do Sol -->
             </transform>
             <models>
                 <model file="sphere.3d" /> <!-- generator sphere 1 20 20 sphere.3d -->
@@ -19,7 +19,7 @@
         <!-- MERCÚRIO -->
         <group>
             <transform>
-                <rotate time="1" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Mercúrio-->
+                <rotate time="6" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Mercúrio-->
                 <translate x="24" y="0" z="0"/>
                 <scale x="0.2" y="0.2" z="0.2"/> <!-- Tamanho de Mercúrio -->
             </transform>
@@ -30,7 +30,7 @@
         <!-- VÉNUS -->
         <group>
             <transform>
-                <rotate time="2.57" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Vénus-->
+                <rotate time="8.57" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Vénus-->
                 <translate x="29" y="0" z="0"/>
                 <scale x="0.5" y="0.5" z="0.5"/> <!-- Tamanho de Vénus -->
             </transform>
@@ -41,7 +41,7 @@
         <!-- TERRA e LUA-->
         <group>
             <transform>
-                <rotate time="4.1" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol da Terra-->
+                <rotate time="10.1" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol da Terra-->
                 <translate x="34" y="0" z="0"/>
             </transform>
             <!-- TERRA -->
@@ -68,7 +68,7 @@
         <!-- MARTE e LUAS-->
         <group>
             <transform>
-                <rotate time="7.88" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Marte-->
+                <rotate time="13.88" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Marte-->
                 <translate x="39" y="0" z="0"/>
                 <scale x="0.3" y="0.3" z="0.3"/> <!-- Tamanho de Marte -->
             </transform>
@@ -104,7 +104,7 @@
         <!-- JÚPITER -->
         <group>
             <transform>
-                <rotate time="20" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Júpiter-->
+                <rotate time="27" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Júpiter-->
                 <translate x="49" y="0" z="0"/>
                 <scale x="6" y="6" z="6"/> <!-- Tamanho de Júpiter -->
             </transform>
@@ -115,7 +115,7 @@
         <!-- SATURNO -->
         <group>
             <transform>
-                <rotate time="25" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Saturno-->
+                <rotate time="35" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Saturno-->
                 <translate x="66" y="0" z="0"/>
             </transform>
             <group>
@@ -128,7 +128,7 @@
             </group>
             <group>
                 <transform>
-                    <rotate angle="20" x="1" y="0" z="1"/> <!-- Ângulo de rotação do anel de Saturno -->
+                    <rotate angle="28" x="1" y="0" z="1"/> <!-- Ângulo de rotação do anel de Saturno -->
                     <scale x="1" y="1" z="1"/> <!-- Tamanho do Anel -->
                 </transform>
                 <models>
@@ -140,7 +140,7 @@
         <!-- ÚRANO -->
         <group>
             <transform>
-                <rotate time="40" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Úrano-->
+                <rotate time="47" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Úrano-->
                 <translate x="80" y="0" z="0"/>
                 <scale x="2" y="2" z="2"/> <!-- Tamanho de Úrano -->
             </transform>
@@ -151,7 +151,7 @@
         <!-- NEPTUNO -->
         <group>
             <transform>
-                <rotate time="55" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Neptuno-->
+                <rotate time="60" x="0" y="1" z="0"/> <!-- Rotação relativa ao Sol de Neptuno-->
                 <translate x="90" y="0" z="0"/>
                 <scale x="2" y="2" z="2"/> <!-- Tamanho de Neptuno -->
             </transform>
@@ -159,5 +159,38 @@
                 <model file="sphere.3d" />
             </models>
         </group>
+        <group>
+        <transform>
+            <rotate angle="15" x="0" y="0" z="1"/><!-- Serve para a trajetória do teapot não ficar paralela ao plano XZ -->
+            <scale x="0.5"  y="0.5" z="0.5"/>
+            <translate time="7" align="True">
+                <!-- Trajetória elíptica do teapot -->
+                <point x="59.0633910" y="0.0000000" z="-10.2705098"/>
+                <point x="49.5410197" y="0.0000000" z="-18.6335576"/>
+                <point x="36.2671151" y="0.0000000" z="-25.2705098"/>
+                <point x="19.5410197" y="0.0000000" z="-29.5316955"/>
+                <point x="-0.0000000" y="0.0000000" z="-31.0000000"/>
+                <point x="-19.5410197" y="0.0000000" z="-29.5316955"/>
+                <point x="-36.2671151" y="0.0000000" z="-25.2705098"/>
+                <point x="-49.5410197" y="0.0000000" z="-18.6335576"/>
+                <point x="-58.0633910" y="0.0000000" z="-10.2705098"/>
+                <point x="-61.0000000" y="0.0000000" z="0.0000000"/>
+                <point x="-58.0633910" y="0.0000000" z="10.2705098"/>
+                <point x="-49.5410197" y="0.0000000" z="18.6335576"/>
+                <point x="-36.2671151" y="0.0000000" z="25.2705098"/>
+                <point x="-19.5410197" y="0.0000000" z="29.5316955"/>
+                <point x="0.0000000" y="0.0000000" z="31.0000000"/>
+                <point x="19.5410197" y="0.0000000" z="29.5316955"/>
+                <point x="36.2671151" y="0.0000000" z="25.2705098"/>
+                <point x="49.5410197" y="0.0000000" z="18.6335576"/>
+                <point x="58.0633910" y="0.0000000" z="10.2705098"/>
+                <point x="61.0000000" y="0.0000000" z="0.0000000"/>
+            </translate>
+            <rotate angle="-90" x="1" y="0" z="0"/>
+        </transform>
+        <models>
+            <model file="bezier_10.3d" /> 
+        </models>
+    </group>
     </group>
 </world>

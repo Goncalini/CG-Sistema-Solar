@@ -55,10 +55,6 @@ GLuint buffers[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
-//GroupsParser -> passei para ja  para matriz.hpp!!
-//struct Point {
-//    float x, y, z;
-//};
 enum Type{
     TRANSLATE,
     ROTATE,
@@ -270,24 +266,26 @@ void processTransformations(Group group, int& index){
                 renderCatmullRomCurve(transformation.points);
 
                 glTranslatef(pos[0], pos[1], pos[2]);
-                normalize(deriv);
+                if (transformation.align) {
+                    normalize(deriv);
 
-                float z[3];
-                cross(deriv, prev_y, z);
-                normalize(z);
+                    float z[3];
+                    cross(deriv, prev_y, z);
+                    normalize(z);
 
-                float y[3];
-                cross(z, deriv, y);
-                normalize(y);
+                    float y[3];
+                    cross(z, deriv, y);
+                    normalize(y);
 
-                prev_y[0] = y[0];
-                prev_y[1] = y[1];
-                prev_y[2] = y[2];
+                    prev_y[0] = y[0];
+                    prev_y[1] = y[1];
+                    prev_y[2] = y[2];
 
-                float m[16];
-                buildRotMatrix(deriv, y, z, m);
+                    float m[16];
+                    buildRotMatrix(deriv, y, z, m);
 
-                glMultMatrixf(m);
+                    glMultMatrixf(m);
+                }
 
             }
         }
