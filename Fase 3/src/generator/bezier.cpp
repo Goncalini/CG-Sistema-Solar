@@ -130,8 +130,6 @@ void gerarPontos(float dif, int iTesselation, int jTesselation, float* pontos_ba
 }
 
 
-
-//COMPLETAR!
 Figura generateSurface(const char* patch_file, int tesselation) {
 	
     Figura surface;
@@ -184,6 +182,5 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 		}
 
 	}
-	
     return surface;
 }

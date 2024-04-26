@@ -44,28 +44,6 @@ void multMatrixVector(float* m, float* v, float* res) {
 
 }
 
-/*
-void getCatmullRomPoint(float t, float* p0, float* p1, float* p2, float* p3, float* pos, float* deriv) {
-
-    // catmull-rom matrix
-    float m[4][4] = { {-0.5f,  1.5f, -1.5f,  0.5f},
-                        { 1.0f, -2.5f,  2.0f, -0.5f},
-                        {-0.5f,  0.0f,  0.5f,  0.0f},
-                        { 0.0f,  1.0f,  0.0f,  0.0f} };
-
-
-    for (int i = 0; i < 3; i++) { //i = x,y,z
-        // Compute A = M * P
-        float p[4] = { p0[i], p1[i], p2[i],p3[i] };
-        float a[4];
-        multMatrixVector(*m, p, a);
-        // Compute pos = T * A
-        pos[i] = powf(t, 3.0) * a[0] + powf(t, 2.0) * a[1] + t * a[2] + a[3];
-        // compute deriv = T' * A
-        deriv[i] = 3 * powf(t, 2.0) * a[0] + 2 * t * a[1] + a[2];
-    }
-}
-*/
 
 void getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3, float* pos, float* deriv) {
 
@@ -123,6 +101,4 @@ void getGlobalCatmullRomPoint(float gt, std::list<Point> points, float* pos , fl
     Point p3 = *it3;
 
     getCatmullRomPoint(t, p0, p1, p2, p3, pos, deriv);
-    //COMO ACEDER A UMA LIST????
-    //getCatmullRomPoint(t, points[indices[0]], points[indices[1]], points[indices[2]], points[indices[3]], pos, deriv);
 }

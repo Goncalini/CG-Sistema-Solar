@@ -21,9 +21,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define SPHERICAL true
-#define FIRSTPERSON false
-
 #define tesselation 100.0
 
 using namespace std;
@@ -51,8 +48,6 @@ GLenum mode = GL_LINE;
 
 //Curvas de CatmullRomPoint
 float prev_y[3] = { 0,1,0 };
-
-bool cameraMode;
 
 // VBOs
 int const numFigurasMax = 100;
@@ -255,7 +250,6 @@ void renderCatmullRomCurve(std::list<Point> points) {
     float derivada[3];
     glBegin(GL_LINE_LOOP);
     float gt;
-    //vai fazer [0,1[ de 0.01 por 0.01 - obtem uma curva com todos os segmentos
     for (gt = 0; gt < 1; gt += 1.0 / tesselation) {
         getGlobalCatmullRomPoint(gt, points, pos, derivada);
         glVertex3f(pos[0], pos[1], pos[2]);
@@ -269,8 +263,6 @@ void processTransformations(Group group, int& index){
             if (transformation.time==0){
                 glTranslatef(transformation.x,transformation.y,transformation.z);
             }else{
-                
-                //alterar e por a fazer uma translacao que demore time segundos a realizar uma volta completa na curva.
                 float pos[3], deriv[3];
                 float gt = ( glutGet(GLUT_ELAPSED_TIME) / 1000.0) / transformation.time;
         
@@ -292,7 +284,7 @@ void processTransformations(Group group, int& index){
                 prev_y[1] = y[1];
                 prev_y[2] = y[2];
 
-                float m[16]; //matriz 4*4
+                float m[16];
                 buildRotMatrix(deriv, y, z, m);
 
                 glMultMatrixf(m);
@@ -303,7 +295,6 @@ void processTransformations(Group group, int& index){
             if (transformation.time==0){
                 glRotatef(transformation.angle,transformation.x,transformation.y,transformation.z);
             }else{
-                //por a fazer uma rotacao de 360º sobre um dos eixos que demore time segundos a ser realizada
                 double angle = 360.0 * (glutGet(GLUT_ELAPSED_TIME) / 1000.0) / transformation.time;
                 //para que nunca ultrapasse os 360º
                 while (angle > 360) angle -= 360;
