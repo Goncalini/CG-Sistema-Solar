@@ -23,6 +23,10 @@
 
 #define tesselation 100.0
 
+// modo da c�mera
+#define SPHERICAL true
+#define FIRSTPERSON false
+
 using namespace std;
 
 int width;
@@ -45,6 +49,8 @@ float alfa = M_PI / 4;
 float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
+
+bool cameraMode;
 
 //Curvas de CatmullRomPoint
 float prev_y[3] = { 0,1,0 };
@@ -318,13 +324,25 @@ void processTransformations(Group group, int& index){
     }
 }
 
+
+
+void sphericalCamera() {
+    camPosX = raio * cos(beta2) * sin(alfa);
+    camPosY = raio * sin(beta2);
+    camPosZ = raio * cos(beta2) * cos(alfa);
+}
+
+
 void renderScene(void) {
     // Clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set the camera
     glLoadIdentity();
-    gluLookAt(raio * cos(beta2) * sin(alfa), raio * sin(beta2), raio * cos(beta2) * cos(alfa),
+    if (cameraMode == SPHERICAL) {
+        sphericalCamera();
+    }
+    gluLookAt(camPosX, camPosY, camPosZ,
         camLookAtX, camLookAtY, camLookAtZ,
         camUpX, camUpY, camUpZ);
 
@@ -347,30 +365,117 @@ void renderScene(void) {
     
 }
 
+void moveForward() {
+    float d[3] = { camLookAtX - camPosX, 0, camLookAtZ - camPosZ };
+    normalize(d);
+    float k = 0.1f;
+    camPosX += k * d[0]; camPosZ += k * d[2];
+    camLookAtX += k * d[0]; camLookAtZ += k * d[2];
+}
+
+
+void moveBackward() {
+    float d[3] = { camLookAtX - camPosX, 0, camLookAtZ - camPosZ };
+    normalize(d);
+    float k = -0.1f;
+    camPosX += k * d[0]; camPosY += k * d[1]; camPosZ += k * d[2];
+    camLookAtX += k * d[0]; camLookAtY += k * d[1];camLookAtZ += k * d[2];
+}
+
+void moveRight() {
+    float d[3] = { camLookAtX - camPosX, 0, camLookAtZ - camPosZ };
+    float up[3] = { camUpX,camUpY,camUpZ };
+    float r[3];
+    cross(d,up,r);
+    normalize(r);
+    float k = 0.1f;
+    camPosX += k * r[0]; camPosY += k * r[1]; camPosZ += k * r[2];
+    camLookAtX += k * r[0]; camLookAtY += k * r[1];camLookAtZ += k * r[2];
+}
+
+void moveLeft() {
+    float d[3] = { camLookAtX - camPosX, 0, camLookAtZ - camPosZ };
+    float up[3] = { camUpX,camUpY,camUpZ };
+    float r[3];
+    cross(d, up, r);
+    normalize(r);
+    float k = -0.1f;
+    camPosX += k * r[0]; camPosY += k * r[1]; camPosZ += k * r[2];
+    camLookAtX += k * r[0]; camLookAtY += k * r[1];camLookAtZ += k * r[2];
+}
+
 
 void processSpecialKeys(int key, int xx, int yy) {
     switch (key) {
-        case GLUT_KEY_RIGHT:
+    case GLUT_KEY_RIGHT: {
+        if (cameraMode == SPHERICAL) {
             alfa += 0.1f;
-            break;
-        case GLUT_KEY_LEFT:
-            alfa -= 0.1f;
-            break;
-        case GLUT_KEY_UP:
-            beta2 += 0.1f;
-            break;
-        case GLUT_KEY_DOWN:
-            beta2 -= 0.1f;
-            break;
-        case GLUT_KEY_F1: 
-            raio -= 0.5f;
-            break;
-        case GLUT_KEY_F2:
-            raio += 0.5f;
-            break;
+        }
+        else {
+            //andar para direita
+            moveRight();
+        }
+        break;
     }
-    
+    case GLUT_KEY_LEFT: {
+        if (cameraMode == SPHERICAL) {
+            alfa -= 0.1f;
+        }
+        else {
+            //andar para esquerda
+            moveLeft();
+
+        }
+        break;
+    }
+    case GLUT_KEY_UP: {
+        if (cameraMode == SPHERICAL) {
+            beta2 += 0.1f;
+        }
+        else {
+            //para a frente
+            moveForward();
+        }
+        break;
+    }
+    case GLUT_KEY_DOWN: {
+        if (cameraMode == SPHERICAL) {
+            beta2 -= 0.1f;
+        }
+        else {
+            //para tras
+            moveBackward();
+        }
+        break;
+    }
+    case GLUT_KEY_F1: {
+        if (cameraMode == SPHERICAL) {
+            raio -= 0.5f;
+        }else {
+            camPosY += 1.0f;
+            camLookAtY += 1.0f;
+        }
+        break;
+    }
+    case GLUT_KEY_F2: {
+        if (cameraMode == SPHERICAL) {
+            raio += 0.5f;
+        }
+        else {
+            camPosY -= 1.0f;
+            camLookAtY -= 1.0f;
+        }
+        break;
+    }
+
+    }
     glutPostRedisplay();
+}
+
+void rotateHead() {
+    camLookAtX = camPosX + raio * cos(beta2) * sin(alfa);
+    camLookAtY = camPosY + raio * sin(beta2);
+    camLookAtZ = camPosZ + raio * cos(beta2) * cos(alfa);
 }
 
 void processKeys(unsigned char key, int xx, int yy) {
@@ -387,8 +492,58 @@ void processKeys(unsigned char key, int xx, int yy) {
         case 'p':
             mode = GL_POINT;
             break;
+               
+        //mudar a versao da c�mera
+        case 'c': {
+            if (cameraMode == SPHERICAL) {
+                alfa = M_PI + alfa;
+                beta2 = -beta2;
+                camLookAtX = camPosX + cos(beta2) * sin(alfa);
+                camLookAtY = camPosY + sin(beta2); 
+                camLookAtZ = camPosZ + cos(beta2) * cos(alfa);
+                cameraMode = FIRSTPERSON;
+            }
+            else {
+                raio = sqrt((camPosX * camPosX) + (camPosY * camPosY) + (camPosZ * camPosZ));
+                alfa = atan(camPosX / camPosZ);
+                beta2 = asin(camPosY / raio);
+                camLookAtX = camLookAtY = camLookAtZ = 0.0f;
+                cameraMode = SPHERICAL;
+            }
+            break;
+        }
+        //rodar câmera para esquerda
+        case 'a': {
+            if (cameraMode == FIRSTPERSON) {
+                alfa += 0.1f;
+                rotateHead();
+            }
+            break;
+        }
+        //rodar câmera para direita
+        case 'd': {
+            if (cameraMode == FIRSTPERSON) {
+                alfa -= 0.1f;
+                rotateHead();
+            }
+            break;
+        }
+        //rodar câmera para cima
+        case 'w': {
+            if (cameraMode == FIRSTPERSON) {
+                beta2 += 0.1f;
+                rotateHead();
+            }
+            break;
+        }
+        case 's': {
+            if (cameraMode == FIRSTPERSON) {
+                beta2 += 0.1f;
+                rotateHead();
+            }
+            break;
+        }             
     }
-    
     glutPostRedisplay();
 }
 
@@ -406,6 +561,8 @@ int main(int argc, char *argv[]) {
     printf("Engine started\n");
 
     read_XML(argv[1]);
+
+    cameraMode = SPHERICAL;
 
     alfa = acos(camPosZ / sqrt(camPosX * camPosX + camPosZ * camPosZ));
     raio = sqrt((camPosX * camPosX) + (camPosY * camPosY) + (camPosZ * camPosZ));
