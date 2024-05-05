@@ -5,6 +5,7 @@
 void generateXZ(int length, int divisions, float height, int baixo, Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
+	float normals[3] = { 0.0,1.0,0.0 };
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
 	float x0 = -half, z0 = -half,
 		x1 = -half, z1 = -half + div,
@@ -17,6 +18,13 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 		z0 = z3;
 		x3 = xaux;
 		z3 = zaux;
+
+		//inverter as normais
+		for (int i = 0; i < 3;i++) {
+			if (normals[i] != 0.0) {
+				normals[i] = -normals[i];
+			}
+		}
 	}
 
 	for (int line = 0; line < divisions; line++) {
@@ -27,23 +35,29 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 			addPonto(figura, newPonto(x1 + collums * div, height, z1));
 			addPonto(figura, newPonto(x3 + collums * div, height, z3));
 
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 
 			//segundo triangulo
 			addPonto(figura, newPonto(x2 + collums * div, height, z2));
 			addPonto(figura, newPonto(x0 + collums * div, height, z0));
 			addPonto(figura, newPonto(x3 + collums * div, height, z3));
+
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
-	//writeToFile(figura, "box.ex");
-	//mudar return 
 }
 
 
 void generateXY(int length, int divisions, float height, int reverse,Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
+	float normals[3] = { 0.0,0.0,1.0 };
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
 	float x0 = -half, y0 = -half,
 		x1 = -half, y1 = -half + div,
@@ -57,6 +71,11 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 		y0 = y3;
 		x3 = xaux;
 		y3 = yaux;
+		for (int i = 0; i < 3;i++) {
+			if (normals[i] != 0.0) {
+				normals[i] = -normals[i];
+			}
+		}
 	}
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
@@ -65,15 +84,22 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 			addPonto(figura, newPonto(x1 + collums * div, y1, height));
 			addPonto(figura, newPonto(x3 + collums * div, y3, height));
 
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+
 			//segundo triangulo
 			addPonto(figura, newPonto(x2 + collums * div, y2, height));
 			addPonto(figura, newPonto(x0 + collums * div, y0, height));
 			addPonto(figura, newPonto(x3 + collums * div, y3, height));
+
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+
 		}
 		y0 += div; y1 += div; y2 += div; y3 += div;
 	}
-	//mudar return 
-	//writeToFile(figura, "box.ex");
 }
 
 
@@ -82,7 +108,7 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 void generateYZ(int length, int divisions, float height, int reverse,Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
-
+	float normals[3] = { 1.0,0.0,0.0 };
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
 	float y0 = -half, z0 = -half,
 		y1 = -half, z1 = -half + div,
@@ -96,6 +122,11 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 		z0 = z3;
 		y3 = yaux;
 		z3 = zaux;
+		for (int i = 0; i < 3;i++) {
+			if (normals[i] != 0.0) {
+				normals[i] = -normals[i];
+			}
+		}
 	}
 
 	for (int line = 0; line < divisions; line++) {
@@ -105,15 +136,21 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 			addPonto(figura, newPonto(height, y1 + collums * div, z1));
 			addPonto(figura, newPonto(height, y3 + collums * div, z3));
 
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+
 			//segundo triangulo
 			addPonto(figura, newPonto(height, y2 + collums * div, z2));
 			addPonto(figura, newPonto(height, y0 + collums * div, z0));
 			addPonto(figura, newPonto(height, y3 + collums * div, z3));
+
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
-	//mudar return 
-	//writeToFile(figura, "box.ex");
 }
 
 

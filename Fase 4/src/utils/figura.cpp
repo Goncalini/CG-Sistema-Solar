@@ -8,6 +8,14 @@ void addPonto(Figura& f, Ponto p) {
 	f.pontos.push_back(p);
 }
 
+void addNormal(Figura& f, Ponto n) {
+	f.normais.push_back(n);
+}
+
+void addTexture(Figura& f, Ponto n) {
+	f.texturas.push_back(n);
+}
+
 void writeToFile(Figura f, const char* file_path) {
 	
 	if (f.pontos.empty()) {
@@ -25,8 +33,11 @@ void writeToFile(Figura f, const char* file_path) {
 	int tamanho = f.pontos.size();
 	file << tamanho << std::endl;
 
-	for (const auto& ponto : f.pontos){
-		file << getX(ponto) << ";" << getY(ponto) << ";" << getZ(ponto) << "\n";
+	for (int i = 0; i < tamanho; i++) { //verificar
+		Ponto ponto = f.pontos[i];
+		Ponto normal = f.normais[i];
+		Ponto textura = f.texturas[i];
+		file <<getX(ponto) << "," << getY(ponto) << "," << getZ(ponto) << ";" << getX(normal) << "," << getY(normal) << "," << getZ(normal) << ";" << getX(textura) << "," << getY(textura) << "\n";
 	}
 
 	file.close();
