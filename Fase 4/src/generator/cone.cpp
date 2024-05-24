@@ -9,6 +9,7 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 	//altura das stacks
 	float div_height = height / stacks;
 
+	//normais
 	std::vector<Ponto> normals;
 	//float origem[3] = { 0.0,0.0,0.0 };
 	//float topo[3] = { 0.0,height,0.0};
@@ -19,23 +20,6 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 		float alfa_1 = i * alfa;
 		float alfa_2 = (i + 1) * alfa;
 
-	
-		//float v[3]; //vetor vertical V
-		//float h[3]; //vetor horizontal entre origem e ponto
-		//float hip[3]; //vetor hipotenusa entre topo e ponto
-		//float coords[3] = { radius * sin(alfa_1), 0, radius * cos(alfa_1) }; //coordenadas do ponto
-		//
-		//vector2Pontos(origem, topo, v);
-		//vector2Pontos(origem, coords, h);
-		//vector2Pontos(topo, coords, hip);
-		//
-		//float vh[3];
-		//cross(v,h,vh);
-		//float res[3];
-		//cross(vh, hip, res);
-		//normalize(res);
-		//normals.push_back(newPontoArray(res));
-
 		addPonto(cone, newPonto(radius * sin(alfa_1), 0, radius * cos(alfa_1)));
 		addPonto(cone, newPonto(0, 0, 0));
 		addPonto(cone, newPonto(radius * sin(alfa_2), 0, radius * cos(alfa_2)));
@@ -43,6 +27,10 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 		addNormal(cone, newPonto(0, -1, 0));
 		addNormal(cone, newPonto(0, -1, 0));
 		addNormal(cone, newPonto(0, -1, 0));
+
+		addTexture(cone, newPonto(0.5 + 0.5 * sin(alfa_1), 0.5 + 0.5 * cos(alfa_1), 0));
+		addTexture(cone, newPonto(0.5, 0.5, 0));//ponto do centro
+		addTexture(cone, newPonto(0.5 + 0.5 * sin(alfa_2), 0.5 + 0.5 * cos(alfa_2), 0));
 	}
 
 	float atual_radius;
@@ -65,6 +53,12 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 			Ponto n1 = calculateNormal(p0, p1, p2);
 			Ponto n2 = calculateNormal(p3, p1, p2);
 
+			//texturas
+			float s0 = (float)i / slices;
+			float s1 = (float)(i + 1) / slices;
+			float t0 = (float)j / stacks;
+			float t1 = (float)n / stacks; //(j+1)/stacks
+
 			//primeiro triangulo
 			addPonto(cone, p0);
 			addPonto(cone, p1);
@@ -74,6 +68,10 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 			addNormal(cone, n2);
 			addNormal(cone, n1);
 
+			addTexture(cone, newPonto(s0, t0, 0));
+			addTexture(cone, newPonto(s1, t0, 0));
+			addTexture(cone, newPonto(s0, t1, 0));
+
 			//segundo triangulo
 			addPonto(cone, p2);
 			addPonto(cone, p1);
@@ -82,16 +80,26 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 			addNormal(cone, n1);
 			addNormal(cone, n2);
 			addNormal(cone, n2);
+
+			addTexture(cone, newPonto(s0, t1, 0));
+			addTexture(cone, newPonto(s1, t0, 0));
+			addTexture(cone, newPonto(s1, t1, 0));
 		
 			atual_radius = next_radius;
 		}
-		//triangulos do topo do cone (ultima stack) - aproveita os ultimos pontos calculados
+		//triangulos do topo do cone (ultima stack) 
+
+		//nao sei se usar aqui o n é válido - trocar para stacks - 1?!!!
 		Ponto px = newPonto(next_radius * sin(i * alfa), div_height * n, next_radius * cos(i * alfa));
 		Ponto py = newPonto(next_radius * sin((i + 1) * alfa), div_height * n, next_radius * cos((i + 1) * alfa));
 		Ponto pt = newPonto(0, height, 0);
 
 		Ponto nx = calculateNormal(px, py, pt);
 		Ponto ny = calculateNormal(py, px, pt);
+
+		float u0 = (float)i / slices;
+		float u1 = (float)(i + 1) / slices;
+		float t = (float)n / stacks;
 
 		addPonto(cone, px);
 		addPonto(cone, py);
@@ -101,6 +109,9 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 		addNormal(cone, ny);
 		addNormal(cone, nx);
 
+		addTexture(cone, newPonto(u0, t, 0));
+		addTexture(cone, newPonto(u1, t, 0));
+		addTexture(cone, newPonto((u0 + u1) / 2, 1.0, 0)); //várias duvidas sobre isto!!!!
 
 	}
 	return cone;

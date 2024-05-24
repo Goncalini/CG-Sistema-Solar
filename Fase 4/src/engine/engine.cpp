@@ -234,7 +234,7 @@ void drawFigure(std::string figureFile){
     while (std::getline(file, linha)) {
         std::istringstream iss(linha);
         std::string token;
-        while (std::getline(iss, token, ';')) {
+        while (std::getline(iss, token, ',')) {
             float value = std::stof(token);
             vertexB.push_back(value);
         }

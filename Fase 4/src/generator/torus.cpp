@@ -41,18 +41,16 @@ Figura generateTorus(float ri, float re, int slices, int stacks) {
 			Ponto p4 = newPonto((radius + dist * cos(betai)) * cos(alfaf), dist * sin(betai), (radius + dist * cos(betai)) * sin(alfaf));
 
 
-
-			//a testar com a luz dps
+			//a testar com a luz dps!!
 			Ponto n1 = normalize(newPonto(cos(betai) * cos(alfai), sin(betai), cos(betai) * sin(alfai)));
 			Ponto n2 = normalize(newPonto(cos(betaf) * cos(alfai), sin(betaf), cos(betaf) * sin(alfai)));
 			Ponto n3 = normalize(newPonto(cos(betaf) * cos(alfaf), sin(betaf), cos(betaf) * sin(alfaf)));
 			Ponto n4 = normalize(newPonto(cos(betai) * cos(alfaf), sin(betai), cos(betai) * sin(alfaf)));
 
-			//Ponto n1 = calculateTorusNormal(alfai, betai, radius, dist);
-			//Ponto n2 = calculateTorusNormal(alfai, betaf, radius, dist);
-			//Ponto n3 = calculateTorusNormal(alfaf, betaf, radius, dist);
-			//Ponto n4 = calculateTorusNormal(alfaf, betai, radius, dist);
-
+			Ponto t1 = newPonto((float)j / stacks, (float)i / slices, 0);
+			Ponto t2 = newPonto((float)(j + 1) / stacks, (float)i / slices, 0);
+			Ponto t3 = newPonto((float)(j + 1) / stacks, (float)(i + 1) / slices, 0);
+			Ponto t4 = newPonto((float)j / stacks, (float)(i + 1) / slices, 0);
 			/*
 			* p1 ---- p4
 			* | \     |
@@ -69,6 +67,10 @@ Figura generateTorus(float ri, float re, int slices, int stacks) {
 			addNormal(ring, n2);
 			addNormal(ring, n3);
 
+			addTexture(ring, t1);
+			addTexture(ring, t2);
+			addTexture(ring, t3);
+
 			addPonto(ring, p1);
 			addPonto(ring, p3);
 			addPonto(ring, p4);
@@ -76,6 +78,10 @@ Figura generateTorus(float ri, float re, int slices, int stacks) {
 			addNormal(ring, n1);
 			addNormal(ring, n3);
 			addNormal(ring, n4);
+
+			addTexture(ring, t1);
+			addTexture(ring, t3);
+			addTexture(ring, t4);
 		}																							   
 		
 	}

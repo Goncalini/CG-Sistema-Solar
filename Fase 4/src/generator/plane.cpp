@@ -18,11 +18,17 @@ Figura generatePlane(int length, int divisions) {
 
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
-			//pode ter que se trocar isto para começar o v por 1!!!
+			/* Em coordenadas de textura:
+			* (s0,t1)------(s1,t1)
+			*		|		|
+			*		|		|
+			*		|		|
+			* (s0,t0)------(s1,t0)
+			*/
 			float s0 = collums * texStep;
-			float t0 = line * texStep;
+			float t1 = 1 - (line * texStep);
 			float s1 = (collums + 1) * texStep;
-			float t1 = (line + 1) * texStep;
+			float t0 = 1 - ((line + 1) * texStep);
 
 			//primeiro triangulo
 			addPonto(plano,newPonto(x0 + collums * div, 0, z0));
@@ -33,9 +39,9 @@ Figura generatePlane(int length, int divisions) {
 			addNormal(plano, newPonto(0, 1, 0));
 			addNormal(plano, newPonto(0, 1, 0));
 
-			addTexture(plano, newPonto(s0, t0, 0));
 			addTexture(plano, newPonto(s0, t1, 0));
-			addTexture(plano, newPonto(s1, t1, 0));
+			addTexture(plano, newPonto(s0, t0, 0));
+			addTexture(plano, newPonto(s1, t0, 0));
 
 
 			//segundo triangulo
@@ -47,9 +53,9 @@ Figura generatePlane(int length, int divisions) {
 			addNormal(plano, newPonto(0, 1, 0));
 			addNormal(plano, newPonto(0, 1, 0));
 
-			addTexture(plano, newPonto(s1, t1, 0));
 			addTexture(plano, newPonto(s1, t0, 0));
-			addTexture(plano, newPonto(s0, t0, 0));
+			addTexture(plano, newPonto(s1, t1, 0));
+			addTexture(plano, newPonto(s0, t1, 0));
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}

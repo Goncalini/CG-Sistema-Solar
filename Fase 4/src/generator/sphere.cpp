@@ -13,8 +13,8 @@ Figura generateSphere(float radius, int slices, int stacks) {
 	float t_step = (float)1.0f / stacks;
 
 	for (int i = 0; i < stacks; i++) {
-		float betai = M_PI / 2.0f - i * stackStep;
-		float betaf = M_PI / 2.0f - (i + 1) * stackStep;
+		float betai = (float)M_PI / 2.0f - i * stackStep;
+		float betaf = (float)M_PI / 2.0f - (i + 1) * stackStep;
 
 		for (int j = 0; j < slices;j++) {
 			float alfai = j * sliceStep;

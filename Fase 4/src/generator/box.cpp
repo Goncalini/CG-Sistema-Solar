@@ -5,7 +5,9 @@
 void generateXZ(int length, int divisions, float height, int baixo, Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
+	float texStep = (float)1.0f / divisions;
 	float normals[3] = { 0.0,1.0,0.0 };
+
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
 	float x0 = -half, z0 = -half,
 		x1 = -half, z1 = -half + div,
@@ -20,16 +22,19 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 		z3 = zaux;
 
 		//inverter as normais
-		for (int i = 0; i < 3;i++) {
-			if (normals[i] != 0.0) {
-				normals[i] = -normals[i];
-			}
-		}
+		normals[1] = -normals[1];
 	}
-
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
-			//@TODO - meter aqui as funcoes de meter as cenas na figura
+			float s0 = collums * texStep;
+			float t1 = 1 - (line * texStep);
+			float s1 = (collums + 1) * texStep;
+			float t0 = 1 - ((line + 1) * texStep);
+
+			if (baixo == 1) {
+				std::swap(t0, t1);
+			}
+
 			//primeiro triangulo
 			addPonto(figura, newPonto(x0 + collums * div, height, z0));
 			addPonto(figura, newPonto(x1 + collums * div, height, z1));
@@ -39,6 +44,11 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 
+			addTexture(figura, newPonto(s0, t1, 0));
+			addTexture(figura, newPonto(s0, t0, 0));
+			addTexture(figura, newPonto(s1, t0, 0));
+
+
 			//segundo triangulo
 			addPonto(figura, newPonto(x2 + collums * div, height, z2));
 			addPonto(figura, newPonto(x0 + collums * div, height, z0));
@@ -47,17 +57,22 @@ void generateXZ(int length, int divisions, float height, int baixo, Figura& figu
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
-			
+
+			addTexture(figura, newPonto(s1, t1, 0));
+			addTexture(figura, newPonto(s0, t1, 0));
+			addTexture(figura, newPonto(s1, t0, 0));
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}
 }
 
 
+//padrão é para o negativo do Z
 void generateXY(int length, int divisions, float height, int reverse,Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
-	float normals[3] = { 0.0,0.0,1.0 };
+	float texStep = (float)1.0f / divisions;
+	float normals[3] = { 0.0,0.0,-1.0 };
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
 	float x0 = -half, y0 = -half,
 		x1 = -half, y1 = -half + div,
@@ -71,14 +86,26 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 		y0 = y3;
 		x3 = xaux;
 		y3 = yaux;
-		for (int i = 0; i < 3;i++) {
-			if (normals[i] != 0.0) {
-				normals[i] = -normals[i];
-			}
-		}
+		//inverter as normais
+		normals[2] = -normals[2];
 	}
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
+			float s0, t0, s1, t1;
+			if (reverse == 1) {
+				t0 = (1 + collums) * texStep;
+				t1 = collums * texStep;
+				s0 = line * texStep;
+				s1 = (line + 1) * texStep;
+			}
+			else {
+				s0 = 1 - (collums + 1) * texStep;
+				t1 = line * texStep;
+				s1 = 1 - collums * texStep;
+				t0 = (line + 1) * texStep;
+
+			}
+
 			//primeiro triangulo
 			addPonto(figura, newPonto(x0 + collums * div, y0, height));
 			addPonto(figura, newPonto(x1 + collums * div, y1, height));
@@ -87,6 +114,10 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+
+			addTexture(figura, newPonto(s1, t0, 0));
+			addTexture(figura, newPonto(s1, t1, 0));
+			addTexture(figura, newPonto(s0, t1, 0));
 
 			//segundo triangulo
 			addPonto(figura, newPonto(x2 + collums * div, y2, height));
@@ -97,6 +128,10 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 
+			addTexture(figura, newPonto(s0, t0, 0));
+			addTexture(figura, newPonto(s1, t0, 0));
+			addTexture(figura, newPonto(s0, t1, 0));
+
 		}
 		y0 += div; y1 += div; y2 += div; y3 += div;
 	}
@@ -104,11 +139,13 @@ void generateXY(int length, int divisions, float height, int reverse,Figura& fig
 
 
 
-//padrão é para o negativo do X
+//padrão é para o negativo do X (reverse = 0)
 void generateYZ(int length, int divisions, float height, int reverse,Figura& figura) {
 	float half = (float)length / 2;
 	float div = (float)length / divisions;
-	float normals[3] = { 1.0,0.0,0.0 };
+	float texStep = (float)1.0f / divisions;
+	float normals[3] = { -1.0,0.0,0.0 };
+
 	//pontos necessário para fazer triangulos do primeiro quadrado do plano
 	float y0 = -half, z0 = -half,
 		y1 = -half, z1 = -half + div,
@@ -122,15 +159,24 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 		z0 = z3;
 		y3 = yaux;
 		z3 = zaux;
-		for (int i = 0; i < 3;i++) {
-			if (normals[i] != 0.0) {
-				normals[i] = -normals[i];
-			}
-		}
+		normals[0] = -normals[0]; //{1,0,0}
 	}
 
 	for (int line = 0; line < divisions; line++) {
 		for (int collums = 0; collums < divisions; collums++) {
+			float s0, t0, s1, t1;
+			if (reverse == 1) {
+				s0 = (line + 1) * texStep;
+				t0 = 1.0f - (collums + 1) * texStep;
+				s1 = line * texStep;
+				t1 = 1.0f - collums * texStep;
+			}
+			else {
+				s0 = collums * texStep;
+				t0 = line * texStep;
+				s1 = (collums + 1) * texStep;
+				t1 = (line + 1) * texStep;
+			}
 			//primeiro triangulo
 			addPonto(figura, newPonto(height, y0 + collums * div, z0));
 			addPonto(figura, newPonto(height, y1 + collums * div, z1));
@@ -140,6 +186,10 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 
+			addTexture(figura, newPonto(s0, t0, 0));
+			addTexture(figura, newPonto(s1, t0, 0));
+			addTexture(figura, newPonto(s1, t1, 0));
+
 			//segundo triangulo
 			addPonto(figura, newPonto(height, y2 + collums * div, z2));
 			addPonto(figura, newPonto(height, y0 + collums * div, z0));
@@ -148,6 +198,10 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
 			addNormal(figura, newPonto(normals[0], normals[1], normals[2]));
+
+			addTexture(figura, newPonto(s0, t1, 0));
+			addTexture(figura, newPonto(s0, t0, 0));
+			addTexture(figura, newPonto(s1, t1, 0));
 		}
 		z0 += div; z1 += div; z2 += div; z3 += div;
 	}

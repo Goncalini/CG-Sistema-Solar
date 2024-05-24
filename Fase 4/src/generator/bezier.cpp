@@ -233,6 +233,9 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 							};
 		for (int iTesselation=0;iTesselation<tesselation;iTesselation++){ 
 			for (int jTesselation=0;jTesselation<tesselation;jTesselation++){
+				float u = dif * iTesselation;
+				float v = dif * jTesselation;
+
 				float ponto1[3];
 				float ponto2[3];
 				float ponto3[3];
@@ -244,14 +247,14 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 				float normal4[3];
 
 				gerarPontos(dif, iTesselation, jTesselation, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto1);
-				gerarPontos(dif, iTesselation+1, jTesselation, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto2);
+				gerarPontos(dif, iTesselation + 1, jTesselation, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto2);
 				gerarPontos(dif, iTesselation, jTesselation+1, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto3);
-				gerarPontos(dif, iTesselation, jTesselation+1, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto4);
+				gerarPontos(dif, iTesselation + 1, jTesselation+1, *pontos_base_x,*pontos_base_y,*pontos_base_z,ponto4);
 
 				gerarNormal(dif, iTesselation, jTesselation, *pontos_base_x, *pontos_base_y, *pontos_base_z, normal1);
 				gerarNormal(dif, iTesselation + 1, jTesselation, *pontos_base_x, *pontos_base_y, *pontos_base_z, normal2);
 				gerarNormal(dif, iTesselation, jTesselation + 1, *pontos_base_x, *pontos_base_y, *pontos_base_z, normal3);
-				gerarNormal(dif, iTesselation, jTesselation + 1, *pontos_base_x, *pontos_base_y, *pontos_base_z, normal4);
+				gerarNormal(dif, iTesselation + 1, jTesselation + 1, *pontos_base_x, *pontos_base_y, *pontos_base_z, normal4);
 
 				addPonto(surface,newPonto(ponto1[0], ponto1[1], ponto1[2]));
 				addPonto(surface,newPonto(ponto2[0], ponto2[1], ponto2[2]));
@@ -261,6 +264,10 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 				addNormal(surface, newPonto(normal2[0], normal2[1], normal2[2]));
 				addNormal(surface, newPonto(normal3[0], normal3[1], normal3[2]));
 
+				addTexture(surface, newPonto(u, v, 0));
+				addTexture(surface, newPonto(u + dif, v, 0));
+				addTexture(surface, newPonto(u, v + dif, 0));
+
 				addPonto(surface,newPonto(ponto2[0], ponto2[1], ponto2[2]));
 				addPonto(surface,newPonto(ponto4[0], ponto4[1], ponto4[2]));
 				addPonto(surface,newPonto(ponto3[0], ponto3[1], ponto3[2]));
@@ -268,6 +275,10 @@ Figura generateSurface(const char* patch_file, int tesselation) {
 				addNormal(surface, newPonto(normal2[0], normal2[1], normal2[2]));
 				addNormal(surface, newPonto(normal4[0], normal4[1], normal4[2]));
 				addNormal(surface, newPonto(normal3[0], normal3[1], normal3[2]));
+
+				addTexture(surface, newPonto(u + dif, v, 0));
+				addTexture(surface, newPonto(u + dif, v + dif, 0));
+				addTexture(surface, newPonto(u, v + dif, 0));
 
 			}
 		}
