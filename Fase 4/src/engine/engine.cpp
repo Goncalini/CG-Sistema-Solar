@@ -76,7 +76,7 @@ double frames;
 
 // VBOs
 int const numFigurasMax = 100;
-GLuint buffers[numFigurasMax];
+GLuint buffers[numFigurasMax*2];
 int numFiguras = 0;
 int vertices;
 
@@ -423,6 +423,10 @@ void processTransformations(Group group, int& index){
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
+
+        glBindBuffer(GL_ARRAY_BUFFER,buffers[index++]);
+        // normals have always 3 components
+        glNormalPointer(GL_FLOAT,0,0);
     }
 
     for (Group child : group.children){
@@ -765,7 +769,6 @@ int main(int argc, char *argv[]) {
     glutCreateWindow("CG");
 
     //Light 
-    // Light initialization
     for (const auto& model : mainGroup.models) {
         setupLighting(model.color);
     }
@@ -785,13 +788,14 @@ int main(int argc, char *argv[]) {
     
     // OpenGL settings
     glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     // Enable smooth shading
     glShadeModel(GL_SMOOTH);
 
     // Initialize VBOs
-    glGenBuffers(numFigurasMax, buffers);
+    glGenBuffers(numFigurasMax*2, buffers);
     processVBOs(mainGroup);
 
     // Enter GLUT's main cycle
