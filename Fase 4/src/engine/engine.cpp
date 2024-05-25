@@ -91,9 +91,12 @@ struct Transformation { //nem todas as transformações usam todos os campos
     bool align;
     std::list<Point> points;
 };
+struct Model { 
+    std::string modelFile, textureFile;
+};
 struct Group {
-    std::list<std::string> files;
     std::list<Transformation> transformations;
+    std::list<Model> models;
     std::list<Group> children;
 };
 Group mainGroup;
@@ -144,7 +147,10 @@ Group processGroup_XML(pugi::xml_node groupNode){
 
     pugi::xml_node modelsNode = groupNode.child("models");
     for (pugi::xml_node modelNode = modelsNode.child("model"); modelNode; modelNode = modelNode.next_sibling("model")) {
-        group.files.push_back(modelNode.attribute("file").as_string());
+        Model model;
+        model.modelFile = modelNode.attribute("file").as_string();
+        model.textureFile = modelNode.child("texture").attribute("file").as_string();
+        group.models.push_back(model);
     }
 
     pugi::xml_node groupsNode = groupNode.child("group");
@@ -361,11 +367,10 @@ void processTransformations(Group group, int& index){
         }
     }
 
-    for (std::string file : group.files){
+    for (Model model : group.models){
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
-        
     }
 
     for (Group child : group.children){
@@ -621,8 +626,8 @@ void processKeys(unsigned char key, int xx, int yy) {
 
 
 void processVBOs(Group group){
-    for (const auto& file : group.files) {
-        drawFigure(file);
+    for (Model model : group.models) {
+        drawFigure(model.modelFile);
     }
 
     for (Group child : group.children){

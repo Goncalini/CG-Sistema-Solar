@@ -18,7 +18,7 @@
 			</transform>
 			<models> 
 				<model file="plane_2_3.3d" > <!-- generator plane 2 3 plane_2_3.3d -->
-				<texture file = "relva.jpg" />
+					<texture file = "relva.jpg" />
 				</model>
 			</models>
 		</group>
