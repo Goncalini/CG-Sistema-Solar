@@ -109,6 +109,28 @@ struct Group {
 };
 Group mainGroup;
 
+void setupLighting(const Color& color) {
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    // Convert 0-255 values to 0-1
+    float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
+    float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
+    float specular[4] = { color.specularR / 255.0f, color.specularG / 255.0f, color.specularB / 255.0f, 1.0f };
+    float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; // Add emissive component
+
+    // Define light colors
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+
+    // Define emissive color
+    glMaterialfv(GL_FRONT, GL_EMISSION, emissive); // Set emissive component
+
+    // Define shininess
+    glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
+}
+
 
 Group processGroup_XML(pugi::xml_node groupNode){
     Group group;
@@ -417,9 +439,13 @@ void processTransformations(Group group, int& index){
         else if (transformation.type == SCALE){
             glScalef(transformation.x,transformation.y,transformation.z);
         }
+
     }
 
     for (Model model : group.models){
+        //Coloca a luz do modelo
+        setupLighting(model.color);
+
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
@@ -725,28 +751,6 @@ void processVBOs(Group group){
     }
 }
 
-void setupLighting(const Color& color) {
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    // Convert 0-255 values to 0-1
-    float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
-    float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
-    float specular[4] = { color.specularR / 255.0f, color.specularG / 255.0f, color.specularB / 255.0f, 1.0f };
-    float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; // Add emissive component
-
-    // Define light colors
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-
-    // Define emissive color
-    glMaterialfv(GL_FRONT, GL_EMISSION, emissive); // Set emissive component
-
-    // Define shininess
-    glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
-}
-
 
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
@@ -767,11 +771,6 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(width, height);
     glutCreateWindow("CG");
-
-    //Light 
-    for (const auto& model : mainGroup.models) {
-        setupLighting(model.color);
-    }
 
     // Required callback registry
     glutDisplayFunc(renderScene);
