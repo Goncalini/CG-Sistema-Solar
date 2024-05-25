@@ -23,7 +23,7 @@
 
 #define tesselation 100.0
 
-// modo da c�mera
+// Modos da câmera
 #define SPHERICAL true
 #define FIRSTPERSON false
 
@@ -32,6 +32,7 @@ using namespace std;
 int width;
 int height;
 
+// Variáveis para câmera
 float camPosX;
 float camPosY;
 float camPosZ;
@@ -44,7 +45,6 @@ float camUpZ;
 float camProjectionFOV;
 float camProjectionNear;
 float camProjectionFar;
-
 bool cameraMode;
 
 float alfa = M_PI / 4;
@@ -55,6 +55,11 @@ GLenum mode = GL_LINE;
 
 //Curvas de CatmullRomPoint
 float prev_y[3] = { 0,1,0 };
+
+//tempo
+int timebase;
+double frames;
+
 
 // VBOs
 int const numFigurasMax = 100;
@@ -336,6 +341,21 @@ void sphericalCamera() {
 }
 
 
+void framerate() {
+    char str[100];
+    frames++;
+    int time = glutGet(GLUT_ELAPSED_TIME);
+    if (time - timebase > 1000) {
+        float fps = frames * 1000.0 / (time - timebase);
+        timebase = time;
+        frames = 0;
+        sprintf(str, "CG | FPS: %.2f", fps);
+        glutSetWindowTitle(str);
+
+    }
+}
+
+
 void renderScene(void) {
     // Clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -363,10 +383,14 @@ void renderScene(void) {
     // Disable vertex array
     glDisableClientState(GL_VERTEX_ARRAY);
 
+    framerate();
+
     // End of frame
     glutSwapBuffers();
     
 }
+
+//------------------ Funções Auxiliares para Camera ------------------
 
 void moveForward() {
     float d[3] = { camLookAtX - camPosX, 0, camLookAtZ - camPosZ };
@@ -407,6 +431,14 @@ void moveLeft() {
     camLookAtX += k * r[0]; camLookAtY += k * r[1];camLookAtZ += k * r[2];
 }
 
+void rotateHead() {
+    camLookAtX = camPosX + raio * cos(beta2) * sin(alfa);
+    camLookAtY = camPosY + raio * sin(beta2);
+    camLookAtZ = camPosZ + raio * cos(beta2) * cos(alfa);
+}
+
+
+//------------------ Process Keys ------------------
 
 void processSpecialKeys(int key, int xx, int yy) {
     switch (key) {
@@ -475,14 +507,8 @@ void processSpecialKeys(int key, int xx, int yy) {
     glutPostRedisplay();
 }
 
-void rotateHead() {
-    camLookAtX = camPosX + raio * cos(beta2) * sin(alfa);
-    camLookAtY = camPosY + raio * sin(beta2);
-    camLookAtZ = camPosZ + raio * cos(beta2) * cos(alfa);
-}
 
 void processKeys(unsigned char key, int xx, int yy) {
-    // put code to process regular keys in here
     switch (key) {
         case 'f':
             mode = GL_FILL;
@@ -496,7 +522,7 @@ void processKeys(unsigned char key, int xx, int yy) {
             mode = GL_POINT;
             break;
                
-        //mudar a versao da c�mera
+        //mudar a versao da câmera
         case 'c': {
             if (cameraMode == SPHERICAL) {
                 alfa = M_PI + alfa;
@@ -550,6 +576,7 @@ void processKeys(unsigned char key, int xx, int yy) {
     glutPostRedisplay();
 }
 
+
 void processVBOs(Group group){
     for (const auto& file : group.files) {
         drawFigure(file);
@@ -567,16 +594,18 @@ int main(int argc, char *argv[]) {
 
     cameraMode = SPHERICAL;
 
+    // Calculate Angles for Camera
     alfa = acos(camPosZ / sqrt(camPosX * camPosX + camPosZ * camPosZ));
     raio = sqrt((camPosX * camPosX) + (camPosY * camPosY) + (camPosZ * camPosZ));
     beta2 = asin(camPosY / raio);
     
     // Init GLUT and the window
     glutInit(&argc, argv);
+    timebase = glutGet(GLUT_ELAPSED_TIME);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(width, height);
-    glutCreateWindow("CG@DI-UM");
+    glutCreateWindow("CG");
 
     // Required callback registry
     glutDisplayFunc(renderScene);
