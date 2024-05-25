@@ -311,6 +311,8 @@ void drawFigure(std::string figureFile){
     if (vertices < std::stoi(linha)) vertices = std::stoi(linha);
 
     std::vector<float> vertexB;
+    std::vector<float> vertexL;
+    std::vector<float> vertexT;
 
     // Leia o arquivo linha por linha
     while (std::getline(file, linha)) {
@@ -332,10 +334,12 @@ void drawFigure(std::string figureFile){
                     vertexB.push_back(value);
                 }
                 else if (tokenCount % 3 == 1){
-                    //por aqui as coordenadas das normais
+                    //Aqui as coordenadas das normais
+                    vertexL.push_back(value);
                 }
                 else if (tokenCount % 3 == 2){
-                    //por aqui as coordenadas das texturas
+                    //Aqui as coordenadas das texturas
+                    vertexT.push_back(value);
                 }
             }
             tokenCount++;
@@ -347,6 +351,9 @@ void drawFigure(std::string figureFile){
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras++]); 
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras++]); 
+    glBufferData(GL_ARRAY_BUFFER, vertexL.size() * sizeof(float), vertexL.data(), GL_STATIC_DRAW);
 }
 
 void renderCatmullRomCurve(std::list<Point> points) {
@@ -465,6 +472,55 @@ void renderScene(void) {
     drawAxis();
 
     glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+    //  Ilumination...................................
+    std::list<Light> lights = {
+        {LightType::POINT, 1.0f, 2.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+        {LightType::DIRECTIONAL, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f},
+        {LightType::SPOTLIGHT, 5.0f, 5.0f, 5.0f, 0.0f, -1.0f, -1.0f, 45.0f}
+    };
+
+    int lightIndex = 0;
+    for (const Light& light : lights) {
+        GLenum glLightId = GL_LIGHT0 + lightIndex;
+        
+        // Definindo a posição da luz
+        if (light.type == LightType::POINT || light.type == LightType::SPOTLIGHT) {
+            float pos[4] = {light.posX, light.posY, light.posZ, 1.0f};
+            glLightfv(glLightId, GL_POSITION, pos);
+        } else if (light.type == LightType::DIRECTIONAL) {
+            float dir[4] = {light.dirX, light.dirY, light.dirZ, 0.0f};
+            glLightfv(glLightId, GL_POSITION, dir);
+        }
+
+        // Definindo a direção da luz para spotlight e directional
+        if (light.type == LightType::SPOTLIGHT || light.type == LightType::DIRECTIONAL) {
+            float dir[3] = {light.dirX, light.dirY, light.dirZ};
+            glLightfv(glLightId, GL_SPOT_DIRECTION, dir);
+        }
+
+        // Definindo o cutoff para spotlight
+        if (light.type == LightType::SPOTLIGHT) {
+            glLightf(glLightId, GL_SPOT_CUTOFF, light.cutoff);
+        }
+
+        // Definindo os materiais (exemplo básico)
+        float dark[] = {0.2f, 0.2f, 0.2f, 1.0f};
+        float white[] = {0.8f, 0.8f, 0.8f, 1.0f};
+        float red[] = {0.8f, 0.2f, 0.2f, 1.0f};
+
+        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+        glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
+
+        // Incrementando o índice da luz
+        lightIndex++;
+        if (lightIndex > GL_LIGHT7) {
+            std::cerr << "Warning: OpenGL supports a maximum of 8 lights (GL_LIGHT0 to GL_LIGHT7)." << std::endl;
+            break;
+        }
+    }
+    //............................................
 
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -680,6 +736,21 @@ void processVBOs(Group group){
     }
 }
 
+void setupLighting(const Color& color) {
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    // Converter valores de 0-255 para 0-1
+    float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
+    float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
+    float specular[4] = { color.specularR / 255.0f, color.specularG / 255.0f, color.specularB / 255.0f, 1.0f };
+
+    // Definir cores da luz
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+}
+
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
 
@@ -699,6 +770,12 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(width, height);
     glutCreateWindow("CG");
+
+    //Light 
+    // Light initialization
+    for (const auto& model : mainGroup.models) {
+        setupLighting(model.color);
+    }
 
     // Required callback registry
     glutDisplayFunc(renderScene);
