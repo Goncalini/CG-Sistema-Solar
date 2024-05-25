@@ -45,12 +45,13 @@ float camProjectionFOV;
 float camProjectionNear;
 float camProjectionFar;
 
+bool cameraMode;
+
 float alfa = M_PI / 4;
 float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
-bool cameraMode;
 
 //Curvas de CatmullRomPoint
 float prev_y[3] = { 0,1,0 };
@@ -234,6 +235,8 @@ void drawFigure(std::string figureFile){
     while (std::getline(file, linha)) {
         std::istringstream iss(linha);
         std::string token;
+
+        //as linhas vão passar a ser: coordenadas;normais;texturas
         while (std::getline(iss, token, ',')) {
             float value = std::stof(token);
             vertexB.push_back(value);
