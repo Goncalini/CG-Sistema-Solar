@@ -91,8 +91,16 @@ struct Transformation { //nem todas as transformações usam todos os campos
     bool align;
     std::list<Point> points;
 };
+struct Color { //cada campo tem um valor default caso o modelo não tenha cor no xml
+    float diffuseR = 200, diffuseG = 200, diffuseB = 200;
+    float ambientR = 50, ambientG = 50, ambientB = 50;
+    float specularR = 0, specularG = 0, specularB = 0;
+    float emissiveR = 0, emissiveG = 0, emissiveB = 0;
+    float shininessValue = 0;
+};
 struct Model { 
     std::string modelFile, textureFile;
+    Color color;
 };
 struct Group {
     std::list<Transformation> transformations;
@@ -150,6 +158,25 @@ Group processGroup_XML(pugi::xml_node groupNode){
         Model model;
         model.modelFile = modelNode.attribute("file").as_string();
         model.textureFile = modelNode.child("texture").attribute("file").as_string();
+
+        model.color.diffuseR = modelNode.child("color").child("diffuse").attribute("R").as_float();
+        model.color.diffuseG = modelNode.child("color").child("diffuse").attribute("G").as_float();
+        model.color.diffuseB = modelNode.child("color").child("diffuse").attribute("B").as_float();
+
+        model.color.ambientR = modelNode.child("color").child("ambient").attribute("R").as_float();
+        model.color.ambientG = modelNode.child("color").child("ambient").attribute("G").as_float();
+        model.color.ambientB = modelNode.child("color").child("ambient").attribute("B").as_float();
+
+        model.color.specularR = modelNode.child("color").child("specular").attribute("R").as_float();
+        model.color.specularG = modelNode.child("color").child("specular").attribute("G").as_float();
+        model.color.specularB = modelNode.child("color").child("specular").attribute("B").as_float();
+
+        model.color.emissiveR = modelNode.child("color").child("emissive").attribute("R").as_float();
+        model.color.emissiveG = modelNode.child("color").child("emissive").attribute("G").as_float();
+        model.color.emissiveB = modelNode.child("color").child("emissive").attribute("B").as_float();
+
+        model.color.shininessValue = modelNode.child("color").child("shininess").attribute("value").as_float();
+
         group.models.push_back(model);
     }
 
