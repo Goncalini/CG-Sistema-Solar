@@ -446,6 +446,7 @@ void processTransformations(Group group, int& index){
         glBindBuffer(GL_ARRAY_BUFFER,buffers[index++]);
         // normals have always 3 components
         glNormalPointer(GL_FLOAT,0,0);
+        
     }
 
     for (Group child : group.children){
