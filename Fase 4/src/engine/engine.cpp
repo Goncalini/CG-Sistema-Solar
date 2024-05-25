@@ -365,11 +365,12 @@ void drawFigure(std::string figureFile){
     // Feche o file
     file.close();
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras++]); 
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras*2]); 
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras++]); 
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras*2+1]); 
     glBufferData(GL_ARRAY_BUFFER, vertexL.size() * sizeof(float), vertexL.data(), GL_STATIC_DRAW);
+    numFiguras++;
 }
 
 void renderCatmullRomCurve(std::list<Point> points) {
@@ -446,7 +447,7 @@ void processTransformations(Group group, int& index){
         glBindBuffer(GL_ARRAY_BUFFER,buffers[index++]);
         // normals have always 3 components
         glNormalPointer(GL_FLOAT,0,0);
-        
+  
     }
 
     for (Group child : group.children){
