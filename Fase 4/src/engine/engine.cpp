@@ -110,8 +110,6 @@ struct Group {
 Group mainGroup;
 
 void setupLighting(const Color& color) {
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
 
     // Convert 0-255 values to 0-1
     float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
@@ -788,6 +786,8 @@ int main(int argc, char *argv[]) {
     // OpenGL settings
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     // Enable smooth shading
