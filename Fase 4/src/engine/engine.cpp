@@ -56,8 +56,7 @@ GLenum mode = GL_LINE;
 enum LightType{
     POINT,
     DIRECTIONAL,
-    SPOTLIGHT,
-    EMISSIVE
+    SPOTLIGHT
 };
 struct Light { 
     LightType type;
@@ -119,14 +118,10 @@ void setupLighting(const Color& color) {
     float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; // Add emissive component
 
     // Define light colors
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-
-    // Define emissive color
-    glMaterialfv(GL_FRONT, GL_EMISSION, emissive); // Set emissive component
-
-    // Define shininess
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+    glMaterialfv(GL_FRONT, GL_EMISSION, emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
 }
 
@@ -497,10 +492,6 @@ void renderScene(void) {
         camLookAtX, camLookAtY, camLookAtZ,
         camUpX, camUpY, camUpZ);
 
-    drawAxis();
-
-    glPolygonMode(GL_FRONT_AND_BACK, mode);
-
     //  Light...................................
     int lightIndex = 0;
     for (const Light& light : lights) {
@@ -517,14 +508,7 @@ void renderScene(void) {
             float pos[4] = {light.posX, light.posY, light.posZ, 1.0f}; // 1.0f para luz de spotlight
             glLightfv(glLightId, GL_POSITION, pos);
             float dir[3] = {light.dirX, light.dirY, light.dirZ};
-            glLightfv(glLightId, GL_SPOT_DIRECTION, dir); // GL_SPOT_DIRECTION é usado para spotlight
-        } else if (light.type == LightType::EMISSIVE) {
-            float color[4] = {light.posX, light.posY, light.posZ, 1.0f}; // Use os valores de posição para cor
-            glLightfv(glLightId, GL_AMBIENT, color);
-        }
-
-        // Definindo o cutoff para spotlight
-        if (light.type == LightType::SPOTLIGHT) {
+            glLightfv(glLightId, GL_SPOT_DIRECTION, dir); 
             glLightf(glLightId, GL_SPOT_CUTOFF, light.cutoff);
         }
 
@@ -535,10 +519,11 @@ void renderScene(void) {
             break;
         }
     }
-
-
-
     //............................................
+
+    drawAxis();
+
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
 
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
