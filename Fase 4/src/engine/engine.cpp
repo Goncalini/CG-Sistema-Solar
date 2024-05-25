@@ -473,7 +473,7 @@ void renderScene(void) {
 
     glPolygonMode(GL_FRONT_AND_BACK, mode);
 
-    //  Ilumination...................................
+    //  Light...................................
     std::list<Light> lights = {
         {LightType::POINT, 1.0f, 2.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f},
         {LightType::DIRECTIONAL, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f},
@@ -509,7 +509,7 @@ void renderScene(void) {
         float white[] = {0.8f, 0.8f, 0.8f, 1.0f};
         float red[] = {0.8f, 0.2f, 0.2f, 1.0f};
 
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
         glMaterialfv(GL_FRONT, GL_SPECULAR, white);
         glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
 
