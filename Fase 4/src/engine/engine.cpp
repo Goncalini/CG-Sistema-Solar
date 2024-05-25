@@ -725,16 +725,24 @@ void setupLighting(const Color& color) {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    // Converter valores de 0-255 para 0-1
+    // Convert 0-255 values to 0-1
     float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
     float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
     float specular[4] = { color.specularR / 255.0f, color.specularG / 255.0f, color.specularB / 255.0f, 1.0f };
+    float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; // Add emissive component
 
-    // Definir cores da luz
+    // Define light colors
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+
+    // Define emissive color
+    glMaterialfv(GL_FRONT, GL_EMISSION, emissive); // Set emissive component
+
+    // Define shininess
+    glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
 }
+
 
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
