@@ -312,15 +312,33 @@ void drawFigure(std::string figureFile){
 
     std::vector<float> vertexB;
 
-    // Leia o file linha por linha
+    // Leia o arquivo linha por linha
     while (std::getline(file, linha)) {
         std::istringstream iss(linha);
-        std::string token;
+        std::string tokenSemiColon;
 
-        //as linhas vão passar a ser: coordenadas;normais;texturas
-        while (std::getline(iss, token, ',')) {
-            float value = std::stof(token);
-            vertexB.push_back(value);
+        /* As linhas são do estilo: coordenadas;normais;texturas
+        Cada um dos componentes tem 3 ou 2 valores, separados por vírgulas */ 
+        int tokenCount = 0;
+        while (std::getline(iss, tokenSemiColon, ';')) {
+            std::istringstream issSemiColon(tokenSemiColon);
+            std::string tokenComa;
+
+            // Divide tokenSemiColon por vírgula
+            while (std::getline(issSemiColon, tokenComa, ',')) {
+                float value = std::stof(tokenComa);
+
+                if (tokenCount % 3 == 0){
+                    vertexB.push_back(value);
+                }
+                else if (tokenCount % 3 == 1){
+                    //por aqui as coordenadas das normais
+                }
+                else if (tokenCount % 3 == 2){
+                    //por aqui as coordenadas das texturas
+                }
+            }
+            tokenCount++;
         }
     }
 
