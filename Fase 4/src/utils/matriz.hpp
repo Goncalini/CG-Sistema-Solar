@@ -5,7 +5,7 @@
 
 using namespace std;
 
-typedef struct Point {
+struct Point {
     float x, y, z;
 };
 

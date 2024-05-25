@@ -52,6 +52,19 @@ float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
+//Iluminação
+enum LightType{
+    POINT,
+    DIRECTIONAL,
+    SPOTLIGHT
+};
+struct Light { 
+    LightType type;
+    float posX, posY, posZ; //usando em luzes point e spotlight
+    float dirX, dirY, dirZ; //usando em luzes directional e spotlight
+    float cutoff; //usando em luzes spotlight
+};
+std::list<Light> lights; //lista com as luzes presentes no cenário
 
 //Curvas de CatmullRomPoint
 float prev_y[3] = { 0,1,0 };
@@ -67,13 +80,13 @@ GLuint buffers[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
-enum Type{
+enum TransformationType{
     TRANSLATE,
     ROTATE,
     SCALE
 };
 struct Transformation { //nem todas as transformações usam todos os campos
-    Type type;
+    TransformationType type;
     float x, y, z, angle = 0, time;
     bool align;
     std::list<Point> points;
@@ -149,15 +162,15 @@ void read_XML(char* file_path){
 
     if (result) {
         // Processar o XML
-        pugi::xml_node rootNode = doc.child("world");
+        pugi::xml_node worldNode = doc.child("world");
 
         // Processar atributos do elemento window
-        pugi::xml_node windowNode = rootNode.child("window");
+        pugi::xml_node windowNode = worldNode.child("window");
         width = windowNode.attribute("width").as_int();
         height = windowNode.attribute("height").as_int();
 
         // Processar atributos do elemento camera
-        pugi::xml_node cameraNode = rootNode.child("camera");
+        pugi::xml_node cameraNode = worldNode.child("camera");
         camPosX = cameraNode.child("position").attribute("x").as_float();
         camPosY = cameraNode.child("position").attribute("y").as_float();
         camPosZ = cameraNode.child("position").attribute("z").as_float();
@@ -173,9 +186,39 @@ void read_XML(char* file_path){
         camProjectionFOV = cameraNode.child("projection").attribute("fov").as_float();
         camProjectionNear = cameraNode.child("projection").attribute("near").as_float();
         camProjectionFar = cameraNode.child("projection").attribute("far").as_float();
+
+        // Processar Iluminação
+        pugi::xml_node lightsNode = worldNode.child("lights");
+        for (pugi::xml_node lightNode = lightsNode.child("light"); lightNode; lightNode = lightNode.next_sibling("light")) {
+            Light light;
+            if (std::strcmp(lightNode.attribute("type").as_string(),"point") == 0) {
+                light.type=POINT;
+                light.posX=lightNode.attribute("posx").as_float();
+                light.posY=lightNode.attribute("posy").as_float();
+                light.posZ=lightNode.attribute("posz").as_float();
+            }
+            else if (std::strcmp(lightNode.attribute("type").as_string(),"directional") == 0) {
+                light.type=DIRECTIONAL;
+                light.dirX=lightNode.attribute("dirx").as_float();
+                light.dirY=lightNode.attribute("diry").as_float();
+                light.dirZ=lightNode.attribute("dirz").as_float();
+            }
+            else if (std::strcmp(lightNode.attribute("type").as_string(),"spotlight") == 0) {
+                light.type=SPOTLIGHT;
+                light.posX=lightNode.attribute("posx").as_float();
+                light.posY=lightNode.attribute("posy").as_float();
+                light.posZ=lightNode.attribute("posz").as_float();
+                light.dirX=lightNode.attribute("dirx").as_float();
+                light.dirY=lightNode.attribute("diry").as_float();
+                light.dirZ=lightNode.attribute("dirz").as_float();
+                light.cutoff=lightNode.attribute("cutoff").as_float();
+            }
+            lights.push_back(light);
+        }
         
+
         // Processar Groups
-        pugi::xml_node groupNode = rootNode.child("group");
+        pugi::xml_node groupNode = worldNode.child("group");
         mainGroup = processGroup_XML(groupNode);
     }
 }
