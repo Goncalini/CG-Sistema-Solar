@@ -474,12 +474,6 @@ void renderScene(void) {
     glPolygonMode(GL_FRONT_AND_BACK, mode);
 
     //  Light...................................
-    std::list<Light> lights = {
-        {LightType::POINT, 1.0f, 2.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-        {LightType::DIRECTIONAL, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f},
-        {LightType::SPOTLIGHT, 5.0f, 5.0f, 5.0f, 0.0f, -1.0f, -1.0f, 45.0f}
-    };
-
     int lightIndex = 0;
     for (const Light& light : lights) {
         GLenum glLightId = GL_LIGHT0 + lightIndex;
@@ -503,15 +497,6 @@ void renderScene(void) {
         if (light.type == LightType::SPOTLIGHT) {
             glLightf(glLightId, GL_SPOT_CUTOFF, light.cutoff);
         }
-
-        // Definindo os materiais (exemplo básico)
-        float dark[] = {0.2f, 0.2f, 0.2f, 1.0f};
-        float white[] = {0.8f, 0.8f, 0.8f, 1.0f};
-        float red[] = {0.8f, 0.2f, 0.2f, 1.0f};
-
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, white);
-        glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
 
         // Incrementando o índice da luz
         lightIndex++;
