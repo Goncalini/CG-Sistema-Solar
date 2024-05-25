@@ -56,7 +56,8 @@ GLenum mode = GL_LINE;
 enum LightType{
     POINT,
     DIRECTIONAL,
-    SPOTLIGHT
+    SPOTLIGHT,
+    EMISSIVE
 };
 struct Light { 
     LightType type;
@@ -389,6 +390,7 @@ void renderCatmullRomCurve(std::list<Point> points) {
 }
 
 void processTransformations(Group group, int& index){
+
     for (Transformation transformation : group.transformations){
         if (transformation.type == TRANSLATE){
             if (transformation.time==0){
@@ -441,9 +443,7 @@ void processTransformations(Group group, int& index){
     }
 
     for (Model model : group.models){
-        //Coloca a luz do modelo
         setupLighting(model.color);
-
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
@@ -506,19 +506,21 @@ void renderScene(void) {
     for (const Light& light : lights) {
         GLenum glLightId = GL_LIGHT0 + lightIndex;
         
-        // Definindo a posição da luz
-        if (light.type == LightType::POINT || light.type == LightType::SPOTLIGHT) {
-            float pos[4] = {light.posX, light.posY, light.posZ, 1.0f};
+        // Definindo a posição ou direção da luz, dependendo do tipo
+        if (light.type == LightType::POINT) {
+            float pos[4] = {light.posX, light.posY, light.posZ, 1.0f}; // 1.0f para luz pontual
             glLightfv(glLightId, GL_POSITION, pos);
         } else if (light.type == LightType::DIRECTIONAL) {
-            float dir[4] = {light.dirX, light.dirY, light.dirZ, 0.0f};
+            float dir[4] = {light.dirX, light.dirY, light.dirZ, 0.0f}; // 0.0f para luz direcional
             glLightfv(glLightId, GL_POSITION, dir);
-        }
-
-        // Definindo a direção da luz para spotlight e directional
-        if (light.type == LightType::SPOTLIGHT || light.type == LightType::DIRECTIONAL) {
+        } else if (light.type == LightType::SPOTLIGHT) {
+            float pos[4] = {light.posX, light.posY, light.posZ, 1.0f}; // 1.0f para luz de spotlight
+            glLightfv(glLightId, GL_POSITION, pos);
             float dir[3] = {light.dirX, light.dirY, light.dirZ};
-            glLightfv(glLightId, GL_SPOT_DIRECTION, dir);
+            glLightfv(glLightId, GL_SPOT_DIRECTION, dir); // GL_SPOT_DIRECTION é usado para spotlight
+        } else if (light.type == LightType::EMISSIVE) {
+            float color[4] = {light.posX, light.posY, light.posZ, 1.0f}; // Use os valores de posição para cor
+            glLightfv(glLightId, GL_AMBIENT, color);
         }
 
         // Definindo o cutoff para spotlight
@@ -528,11 +530,14 @@ void renderScene(void) {
 
         // Incrementando o índice da luz
         lightIndex++;
-        if (lightIndex > GL_LIGHT7) {
-            std::cerr << "Warning: OpenGL supports a maximum of 8 lights (GL_LIGHT0 to GL_LIGHT7)." << std::endl;
+        if (lightIndex >= GL_MAX_LIGHTS) { // Usando GL_MAX_LIGHTS para verificar o limite de luzes suportadas
+            std::cerr << "Warning: OpenGL supports a maximum of " << GL_MAX_LIGHTS << " lights." << std::endl;
             break;
         }
     }
+
+
+
     //............................................
 
     // Enable vertex array
