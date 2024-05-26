@@ -95,8 +95,8 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 		Ponto py = newPonto(next_radius * sin((i + 1) * alfa), div_height * n, next_radius * cos((i + 1) * alfa));
 		Ponto pt = newPonto(0, height, 0);
 
-		Ponto nx = calculateNormal(px, py, pt);
-		Ponto ny = calculateNormal(py, px, pt);
+		Ponto nx = normalize(newPonto(cos(i*alfa),sin(nY),sin(i*alfa)));
+		Ponto ny = normalize(newPonto(cos((i+1)*alfa),sin(nY),sin((i+1)*alfa)));
 
 		float u0 = (float)i / slices;
 		float u1 = (float)(i + 1) / slices;
