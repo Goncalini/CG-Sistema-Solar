@@ -42,13 +42,6 @@
 			<models> 
 				<model file="sphere_1_8_8.3d" > <!-- generator sphere 1 8 8 sphere_1_8_8.3d -->
 					<texture file = "earth.jpg" />
-					<color>
-						<diffuse R="254" G="221" B="0" />
-						<ambient R="0" G="0" B="0" />
-						<specular R="0" G="0" B="0" />
-						<emissive R="0" G="0" B="0" />
-						<shininess value="0" />
-					</color>
 				</model>
 			</models>
 		</group>
@@ -61,13 +54,6 @@
 			<models> 
 				<model file="bezier_10.3d" > <!-- generator patch teapot.patch 10 bezier_10.3d -->
 					<texture file = "teapot.jpg" />
-					<color>
-						<diffuse R="254" G="221" B="0" />
-						<ambient R="0" G="0" B="0" />
-						<specular R="0" G="0" B="0" />
-						<emissive R="0" G="0" B="0" />
-						<shininess value="0" />
-					</color>
 				</model>
 			</models>
 		</group>
@@ -78,7 +64,7 @@
 			</transform>
 			<models> 
 				<model file="box_2_3.3d" > <!-- generator 2 3 box_2_3.3d -->
-					<texture file = "teapot.jpg" />
+					<texture file = "box.jpg" />
 				</model>
 			</models>
 		</group>
