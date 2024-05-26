@@ -781,6 +781,9 @@ int main(int argc, char *argv[]) {
     glGenBuffers(numFigurasMax, buffersN);
     processVBOs(mainGroup);
 
+    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+
     // Enter GLUT's main cycle
     glutMainLoop();
     return 1;
