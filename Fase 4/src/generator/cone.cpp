@@ -36,6 +36,7 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 	float atual_radius;
 	float next_radius = radius;
 	int n = 0;
+	float nY = (float)(sin(M_PI - atan(height/radius)));
 
 	//laterais
 	for (int i = 0; i < slices; i++) {
@@ -50,8 +51,8 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 			Ponto p2 = newPonto(next_radius * sin(i * alfa), div_height * n, next_radius * cos(i * alfa));
 			Ponto p3 = newPonto(next_radius * sin((i + 1) * alfa), div_height * n, next_radius * cos((i + 1) * alfa));
 
-			Ponto n1 = calculateNormal(p0, p1, p2);
-			Ponto n2 = calculateNormal(p3, p1, p2);
+			Ponto n1 = normalize(newPonto(cos(i*alfa),sin(nY),sin(i*alfa)));
+			Ponto n2 = normalize(newPonto(cos((i+1)*alfa),sin(nY),sin((i+1)*alfa)));
 
 			//texturas
 			float s0 = (float)i / slices;
@@ -89,13 +90,13 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 		}
 		//triangulos do topo do cone (ultima stack) 
 
-		//nao sei se usar aqui o n é válido - trocar para stacks - 1?!!!
+		//nao sei se usar aqui o n ï¿½ vï¿½lido - trocar para stacks - 1?!!!
 		Ponto px = newPonto(next_radius * sin(i * alfa), div_height * n, next_radius * cos(i * alfa));
 		Ponto py = newPonto(next_radius * sin((i + 1) * alfa), div_height * n, next_radius * cos((i + 1) * alfa));
 		Ponto pt = newPonto(0, height, 0);
 
-		Ponto nx = calculateNormal(px, py, pt);
-		Ponto ny = calculateNormal(py, px, pt);
+		Ponto nx = normalize(newPonto(cos(i*alfa),sin(nY),sin(i*alfa)));
+		Ponto ny = normalize(newPonto(cos((i+1)*alfa),sin(nY),sin((i+1)*alfa)));
 
 		float u0 = (float)i / slices;
 		float u1 = (float)(i + 1) / slices;
@@ -111,7 +112,7 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 
 		addTexture(cone, newPonto(u0, t, 0));
 		addTexture(cone, newPonto(u1, t, 0));
-		addTexture(cone, newPonto((u0 + u1) / 2, 1.0, 0)); //várias duvidas sobre isto!!!!
+		addTexture(cone, newPonto((u0 + u1) / 2, 1.0, 0)); //vï¿½rias duvidas sobre isto!!!!
 
 	}
 	return cone;
