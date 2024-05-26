@@ -78,7 +78,7 @@
 			</transform>
 			<models> 
 				<model file="box_2_3.3d" > <!-- generator 2 3 box_2_3.3d -->
-					<texture file = "box.jpg" />
+					<texture file = "teapot.jpg" />
 				</model>
 			</models>
 		</group>

@@ -147,22 +147,27 @@ int loadTexture(std::string s) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	return texID;
 
 }
 
-void setupColors(const Color& color) {
+void setupColors(const Color& color, int text) {
     // Convert 0-255 values to 0-1
     float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
-    float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
     float specular[4] = { color.specularR / 255.0f, color.specularG / 255.0f, color.specularB / 255.0f, 1.0f };
     float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; 
 
+    float ambient[4]={0,0,0,0};
+    if (text==0){
+        ambient[0] = color.ambientR / 255.0f;
+        ambient[1] = color.ambientG / 255.0f;
+        ambient[2] = color.ambientB / 255.0f;
+        ambient[3] = 1.0f;
+        glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    }
+
     // Define light colors
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
     glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
     glMaterialfv(GL_FRONT, GL_EMISSION, emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
@@ -173,9 +178,12 @@ void setupColors(const Color& color) {
         GLenum glLight = GL_LIGHT0 + Index;
 
         glEnable(glLight);
-        glLightfv(glLight,GL_AMBIENT,ambient);
         glLightfv(glLight,GL_DIFFUSE,diffuse);
         glLightfv(glLight,GL_SPECULAR,specular);
+        if(text==0){
+            glLightfv(glLight,GL_AMBIENT,ambient);
+        }
+        
         Index++;
     }
 
@@ -420,8 +428,6 @@ void drawFigure(std::string figureFile, std::string textureFile){
     file.close();
 
     loadTextureVariable = loadTexture("../../test_files/test_files_phase_4/"+textureFile);
-    std::cout << loadTextureVariable << std::endl;
-
     glBindTexture(GL_TEXTURE_2D,loadTextureVariable);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras]); 
@@ -499,8 +505,12 @@ void processTransformations(Group group, int& index){
     }
 
     for (Model model : group.models){
-        setupColors(model.color);
-        
+        int text= 0;
+        if (model.textureFile!=""){
+            text=1;
+        }
+        setupColors(model.color,text);
+
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -511,6 +521,7 @@ void processTransformations(Group group, int& index){
         glTexCoordPointer(2,GL_FLOAT,0,0);
 
         glDrawArrays(GL_TRIANGLES, 0, vertices);
+
         index++;
     }
 
@@ -582,6 +593,8 @@ void renderScene(void) {
         // Incrementando o índice da luz
         lightIndex++;
     }
+    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
 
     glDisable(GL_LIGHTING);
     drawAxis();
@@ -790,7 +803,6 @@ void processVBOs(Group group){
     for (Model model : group.models) {
         if (model.textureFile!=""){
             glEnable(GL_TEXTURE_2D);
-            std::cout << model.textureFile << std::endl;
         }
         drawFigure(model.modelFile,model.textureFile);
     }
