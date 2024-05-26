@@ -52,6 +52,10 @@ float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
+
+std::vector<float> vertexB;
+std::vector<float> vertexN;
+
 //Iluminação
 enum LightType{
     POINT,
@@ -78,6 +82,7 @@ double frames;
 int const numFigurasMax = 100;
 GLuint buffers[numFigurasMax];
 GLuint buffersN[numFigurasMax];
+GLuint buffersT[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
@@ -110,12 +115,13 @@ struct Group {
 };
 Group mainGroup;
 
-void setupColors(const Color& color) {
+void setupLighting(const Color& color) {
+
     // Convert 0-255 values to 0-1
-    float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
     float ambient[4] = { color.ambientR / 255.0f, color.ambientG / 255.0f, color.ambientB / 255.0f, 1.0f };
+    float diffuse[4] = { color.diffuseR / 255.0f, color.diffuseG / 255.0f, color.diffuseB / 255.0f, 1.0f };
     float specular[4] = { color.specularR / 255.0f, color.specularG / 255.0f, color.specularB / 255.0f, 1.0f };
-    float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; 
+    float emissive[4] = { color.emissiveR / 255.0f, color.emissiveG / 255.0f, color.emissiveB / 255.0f, 1.0f }; // Add emissive component
 
     // Define light colors
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
@@ -326,8 +332,8 @@ void drawFigure(std::string figureFile){
 
     if (vertices < std::stoi(linha)) vertices = std::stoi(linha);
 
-    std::vector<float> vertexB;
-    std::vector<float> vertexN;
+    
+    std::vector<float> vertexT;
 
     // Leia o arquivo linha por linha
     while (std::getline(file, linha)) {
@@ -349,15 +355,25 @@ void drawFigure(std::string figureFile){
                     vertexB.push_back(value);
                 }
                 else if (tokenCount % 3 == 1){
+                    //Aqui as coordenadas das normais
                     vertexN.push_back(value);
                 }
                 else if (tokenCount % 3 == 2){
-                    //por aqui as coordenadas das texturas
+                    //Aqui as coordenadas das texturasa
+                    vertexT.push_back(value);
                 }
             }
             tokenCount++;
         }
+        //for (int i = 0; i < vertexN.size(); i++) {
+        //    std::cout<< vertexN[i] << std::endl;
+        //    vertexN[i] += vertexB[i];
+        //    std::cout<< vertexN[i] << std::endl;
+        //} 
     }
+
+
+    
 
     // Feche o file
     file.close();
@@ -383,6 +399,7 @@ void renderCatmullRomCurve(std::list<Point> points) {
 }
 
 void processTransformations(Group group, int& index){
+
     for (Transformation transformation : group.transformations){
         if (transformation.type == TRANSLATE){
             if (transformation.time==0){
@@ -431,17 +448,19 @@ void processTransformations(Group group, int& index){
         else if (transformation.type == SCALE){
             glScalef(transformation.x,transformation.y,transformation.z);
         }
+
     }
 
     for (Model model : group.models){
-        setupColors(model.color);
+        setupLighting(model.color);
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
+        glDrawArrays(GL_TRIANGLES, 0, vertices);
 
         glBindBuffer(GL_ARRAY_BUFFER,buffersN[index]);
+        // normals have always 3 components
         glNormalPointer(GL_FLOAT,0,0);
 
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
         index++;
     }
 
@@ -489,10 +508,7 @@ void renderScene(void) {
         camLookAtX, camLookAtY, camLookAtZ,
         camUpX, camUpY, camUpZ);
 
-    drawAxis();
-
-    // Light
-    glEnable(GL_LIGHTING);
+    //  Light...................................
     int lightIndex = 0;
     for (const Light& light : lights) {
         GLenum glLightId = GL_LIGHT0 + lightIndex;
@@ -514,13 +530,38 @@ void renderScene(void) {
 
         // Incrementando o índice da luz
         lightIndex++;
+        if (lightIndex >= GL_MAX_LIGHTS) { // Usando GL_MAX_LIGHTS para verificar o limite de luzes suportadas
+            std::cerr << "Warning: OpenGL supports a maximum of " << GL_MAX_LIGHTS << " lights." << std::endl;
+            break;
+        }
     }
+    //............................................
+
+    drawAxis();
+
+    //glBegin(GL_LINES);
+    //glColor3f(1,0,0);
+    //glVertex3f(1,1,1);
+    //for (size_t i = 0; i < vertexN.size(); i += 3) {
+        //std::cout << vertexN[i] << " "; // Imprime o valor atual do vetor
+    //    glVertex3f((vertexN[i]) + vertexB[i], vertexN[i+1] + vertexB[i+1], vertexN[i+2] + vertexB[i+2]);
+    //}
+    //glEnd();
+    glBegin(GL_LINES);
+    glColor3f(1, 0, 0); // Set color for normal vectors
+    for (size_t i = 0; i < vertexN.size(); i += 3) {
+        glVertex3f(vertexN[i], vertexN[i + 1], vertexN[i + 2]);
+        //glVertex3f(vertexB[i] + vertexN[i], vertexB[i + 1] + vertexN[i + 1], vertexB[i + 2] + vertexN[i + 2]);
+    }
+    glColor3f(1, 0, 0); // Set color for normal vectors
+    glEnd();
+
+
 
     glPolygonMode(GL_FRONT_AND_BACK, mode);
 
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
 
     //Transformations
     int index = 0;
@@ -528,12 +569,12 @@ void renderScene(void) {
 
     // Disable vertex array
     glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
 
     framerate();
 
     // End of frame
     glutSwapBuffers();
+    
 }
 
 //------------------ Funções Auxiliares para Camera ------------------
@@ -733,6 +774,7 @@ void processVBOs(Group group){
     }
 }
 
+
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
 
@@ -773,13 +815,14 @@ int main(int argc, char *argv[]) {
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glEnable(GL_RESCALE_NORMAL);
+    // Enable smooth shading
     glShadeModel(GL_SMOOTH);
 
     // Initialize VBOs
-    glGenBuffers(numFigurasMax, buffers);
-    glGenBuffers(numFigurasMax, buffersN);
+    glGenBuffers(numFigurasMax*2, buffers);
     processVBOs(mainGroup);
+
+    
 
     // Enter GLUT's main cycle
     glutMainLoop();
