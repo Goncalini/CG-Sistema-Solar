@@ -197,7 +197,10 @@ void gerarNormal(float dif, int iTesselation, int jTesselation, float* pontos_ba
 	result_v[1] = result_Yv;
 	result_v[2] = result_Zv;
 						  
+	normalize(result_u);
+	normalize(result_v);
 	cross(result_v, result_u, result);
+	normalize(result);
 }
 
 
