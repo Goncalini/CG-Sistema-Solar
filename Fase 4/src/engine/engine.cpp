@@ -835,8 +835,6 @@ int main(int argc, char *argv[]) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_RESCALE_NORMAL);
-    
-    glShadeModel(GL_SMOOTH);
 
     // Define a luz ambiente global
     float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
