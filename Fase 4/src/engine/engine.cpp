@@ -56,6 +56,10 @@ float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
+std::vector<float> vertexB;
+    std::vector<float> vertexN;
+    std::vector<float> vertexT;
+
 //Iluminação
 enum LightType{
     POINT,
@@ -382,10 +386,6 @@ void drawFigure(std::string figureFile, std::string textureFile){
 
     if (vertices < std::stoi(linha)) vertices = std::stoi(linha);
 
-    std::vector<float> vertexB;
-    std::vector<float> vertexN;
-    std::vector<float> vertexT;
-
     // Leia o arquivo linha por linha
     while (std::getline(file, linha)) {
         std::istringstream iss(linha);
@@ -585,6 +585,14 @@ void renderScene(void) {
 
     glDisable(GL_LIGHTING);
     drawAxis();
+    glBegin(GL_LINES);
+    glColor3f(1, 0, 0); // Set color for normal vectors
+    for (size_t i = 0; i < vertexN.size(); i += 3) {
+        glVertex3f(vertexB[i], vertexB[i + 1], vertexB[i + 2]);
+        glVertex3f(vertexB[i] + vertexN[i]/5, vertexB[i + 1] + vertexN[i + 1]/5, vertexB[i + 2] + vertexN[i + 2]/5);
+    }
+    glColor3f(1, 0, 0); // Set color for normal vectors
+    glEnd();
     glEnable(GL_LIGHTING);
 
     glPolygonMode(GL_FRONT_AND_BACK, mode);
