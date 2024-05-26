@@ -404,7 +404,8 @@ void drawFigure(std::string figureFile, std::string textureFile){
     // Feche o file
     file.close();
 
-    loadTextureVariable = loadTexture("../../textures/"+textureFile);
+    loadTextureVariable = loadTexture("../../test_files/test_files_phase_4/"+textureFile);
+    std::cout << loadTextureVariable << std::endl;
 
     glBindTexture(GL_TEXTURE_2D,loadTextureVariable);
 
