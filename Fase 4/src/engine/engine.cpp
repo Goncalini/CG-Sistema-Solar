@@ -21,6 +21,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <IL/il.h>
+
 #define tesselation 100.0
 
 // Modos da câmera
@@ -78,6 +80,7 @@ double frames;
 int const numFigurasMax = 100;
 GLuint buffers[numFigurasMax];
 GLuint buffersN[numFigurasMax];
+GLuint buffersT[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
@@ -328,6 +331,7 @@ void drawFigure(std::string figureFile){
 
     std::vector<float> vertexB;
     std::vector<float> vertexN;
+    std::vector<float> vertexT;
 
     // Leia o arquivo linha por linha
     while (std::getline(file, linha)) {
@@ -352,7 +356,7 @@ void drawFigure(std::string figureFile){
                     vertexN.push_back(value);
                 }
                 else if (tokenCount % 3 == 2){
-                    //por aqui as coordenadas das texturas
+                    vertexT.push_back(value);
                 }
             }
             tokenCount++;
@@ -367,6 +371,9 @@ void drawFigure(std::string figureFile){
 
     glBindBuffer(GL_ARRAY_BUFFER, buffersN[numFiguras]); 
     glBufferData(GL_ARRAY_BUFFER, vertexN.size() * sizeof(float), vertexN.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffersT[numFiguras]); 
+    glBufferData(GL_ARRAY_BUFFER, vertexT.size() * sizeof(float), vertexT.data(), GL_STATIC_DRAW);
     numFiguras++;
 }
 
@@ -733,6 +740,44 @@ void processVBOs(Group group){
     }
 }
 
+
+int loadTexture(std::string s) {
+
+	unsigned int t,tw,th;
+	unsigned char *texData;
+	unsigned int texID;
+
+	ilInit();
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+	ilGenImages(1,&t);
+	ilBindImage(t);
+	ilLoadImage((ILstring)s.c_str());
+	tw = ilGetInteger(IL_IMAGE_WIDTH);
+	th = ilGetInteger(IL_IMAGE_HEIGHT);
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+	texData = ilGetData();
+
+	glGenTextures(1,&texID);
+	
+	glBindTexture(GL_TEXTURE_2D,texID);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texID;
+
+}
+
+
+
 int main(int argc, char *argv[]) {
     printf("Engine started\n");
 
@@ -769,20 +814,25 @@ int main(int argc, char *argv[]) {
     // OpenGL settings
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_RESCALE_NORMAL);
+    glEnable(GL_TEXTURE_2D);
+    
     glShadeModel(GL_SMOOTH);
 
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
     glGenBuffers(numFigurasMax, buffersN);
+    glGenBuffers(numFigurasMax, buffersT);
     processVBOs(mainGroup);
 
     float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+    
 
     // Enter GLUT's main cycle
     glutMainLoop();
