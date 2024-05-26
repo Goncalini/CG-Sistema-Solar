@@ -208,8 +208,6 @@ void generateYZ(int length, int divisions, float height, int reverse,Figura& fig
 }
 
 
-
-//trocar para gerar figura
 Figura generateBox(int length, int divisions) {
 	Figura box = Figura();
 	float half = (float)length / 2;

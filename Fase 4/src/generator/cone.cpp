@@ -11,9 +11,6 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 
 	//normais
 	std::vector<Ponto> normals;
-	//float origem[3] = { 0.0,0.0,0.0 };
-	//float topo[3] = { 0.0,height,0.0};
-	
 
 	//base
 	for (int i = 0; i < slices; i++) {
@@ -28,9 +25,13 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 		addNormal(cone, newPonto(0, -1, 0));
 		addNormal(cone, newPonto(0, -1, 0));
 
-		addTexture(cone, newPonto(0.5 + 0.5 * sin(alfa_1), 0.5 + 0.5 * cos(alfa_1), 0));
-		addTexture(cone, newPonto(0.5, 0.5, 0));//ponto do centro
-		addTexture(cone, newPonto(0.5 + 0.5 * sin(alfa_2), 0.5 + 0.5 * cos(alfa_2), 0));
+		float texCoordX1 = (float)i / slices;
+		float texCoordX2 = (float)(i + 1) / slices;
+		float texCoordCenter = (texCoordX1 + texCoordX2) / 2.0f;
+
+		addTexture(cone, newPonto(texCoordX1, 0, 0));
+		addTexture(cone, newPonto(texCoordCenter, 1, 0)); // para o centro
+		addTexture(cone, newPonto(texCoordX2, 0, 0));
 	}
 
 	float atual_radius;
@@ -89,8 +90,6 @@ Figura generateCone(float radius, float height, int slices, int stacks) {
 			atual_radius = next_radius;
 		}
 		//triangulos do topo do cone (ultima stack) 
-
-		//nao sei se usar aqui o n � v�lido - trocar para stacks - 1?!!!
 		Ponto px = newPonto(next_radius * sin(i * alfa), div_height * n, next_radius * cos(i * alfa));
 		Ponto py = newPonto(next_radius * sin((i + 1) * alfa), div_height * n, next_radius * cos((i + 1) * alfa));
 		Ponto pt = newPonto(0, height, 0);

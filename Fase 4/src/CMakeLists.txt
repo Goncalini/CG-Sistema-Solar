@@ -39,8 +39,8 @@ add_library(
 )
 
 # Associate libraries with executables
-target_link_libraries(generator PRIVATE utils_lib figures_lib)
-target_link_libraries(engine PRIVATE utils_lib figures_lib pugixml_lib)
+target_link_libraries(generator utils_lib figures_lib)
+target_link_libraries(engine utils_lib figures_lib pugixml_lib)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -54,11 +54,6 @@ endif(NOT OPENGL_FOUND)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pugixml/src)
 
-# Find DevIL
-find_package(DevIL REQUIRED)
-include_directories(${IL_INCLUDE_DIR})
-target_link_libraries(engine PRIVATE ${IL_LIBRARIES})
-
 if(WIN32)
     message(STATUS "Toolkits_DIR set to: " ${TOOLKITS_FOLDER})
     set(TOOLKITS_FOLDER "" CACHE PATH "Path to Toolkits folder")
@@ -71,20 +66,26 @@ if(WIN32)
         message(ERROR ": GLEW not found")
     endif (NOT EXISTS "${TOOLKITS_FOLDER}/glew/GL/glew.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glew/glew32.lib")
 
-    include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew)
-    target_link_libraries(engine PRIVATE ${OPENGL_LIBRARIES} 
+    if (NOT EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h")
+        message(ERROR ": DevIL not found")
+    endif (NOT EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h")
+
+    include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew ${TOOLKITS_FOLDER}/devil)
+    target_link_libraries(engine ${OPENGL_LIBRARIES} 
         ${TOOLKITS_FOLDER}/glut/glut32.lib
         ${TOOLKITS_FOLDER}/glew/glew32.lib
+        ${TOOLKITS_FOLDER}/devil/devIL.lib
         pugixml_lib)
 
-    target_link_libraries(generator PRIVATE ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/glut/glut32.lib
+    target_link_libraries(generator ${OPENGL_LIBRARIES} ${TOOLKITS_FOLDER}/glut/glut32.lib
         ${TOOLKITS_FOLDER}/glew/glew32.lib
         pugixml_lib)
 
-    if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
+    if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll" AND EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h")
         file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
+        file(COPY ${TOOLKITS_FOLDER}/devil/devil.dll DESTINATION ${CMAKE_BINARY_DIR})
         file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR})
-    endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
+    endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll" AND EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h")
 
 else(WIN32)
     # Linux and Mac specific configurations
@@ -96,6 +97,10 @@ else(WIN32)
 
     find_package(GLEW REQUIRED)
     include_directories(${GLEW_INCLUDE_DIRS})
+
+    # Find DevIL
+    find_package(DevIL REQUIRED)
+    include_directories(${IL_INCLUDE_DIR})
 
     target_link_libraries(engine PRIVATE ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${IL_LIBRARIES})
     target_link_libraries(generator PRIVATE ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})

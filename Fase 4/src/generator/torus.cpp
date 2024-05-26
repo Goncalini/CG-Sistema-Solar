@@ -3,20 +3,6 @@
 #include <math.h>
 #include "../utils/figura.hpp"
 
-Ponto calculateTorusNormal(float theta, float phi, float R, float r) {
-	float nx = cos(theta) * cos(phi);
-	float ny = cos(theta) * sin(phi);
-	float nz = sin(theta);
-
-	// Normalizar o vetor
-	float length = sqrt(nx * nx + ny * ny + nz * nz);
-	nx /= length;
-	ny /= length;
-	nz /= length;
-
-	return newPonto(nx, ny, nz);
-}
-
 Figura generateTorus(float ri, float re, int slices, int stacks) {
 	Figura ring = Figura();
 

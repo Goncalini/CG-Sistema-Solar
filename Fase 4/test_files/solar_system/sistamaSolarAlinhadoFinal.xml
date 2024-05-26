@@ -17,7 +17,7 @@
             </transform>
             <models>
                 <model file="sphere.3d"> <!-- generator sphere 1 20 20 sphere.3d -->
-                    <texture file = "..\..\textures\sun.jpg" />
+                    <texture file = "..\..\..\textures\sun.jpg" />
                     <color>
                         <emissive R="255" G="255" B="255"/>
                     </color>
@@ -32,7 +32,7 @@
             </transform>
             <models>
                 <model file="sphere.3d">
-                    <texture file = "..\..\textures\mercury.jpg" />
+                    <texture file = "..\..\..\textures\mercury.jpg" />
                 </model>
             </models>
         </group>
@@ -44,7 +44,7 @@
             </transform>
             <models>
                 <model file="sphere.3d">
-                    <texture file = "..\..\textures\venus.jpg" />
+                    <texture file = "..\..\..\textures\venus.jpg" />
                 </model>  
             </models>
         </group>
@@ -60,7 +60,7 @@
                 </transform>
                 <models>
                     <model file="sphere.3d">
-                        <texture file = "..\..\textures\earth.jpg" />
+                        <texture file = "..\..\..\textures\earth.jpg" />
                     </model>  
                 </models>
             </group>
@@ -72,7 +72,7 @@
                 </transform>
                 <models>
                     <model file="sphere.3d">
-                        <texture file = "..\..\textures\moon.jpg" />
+                        <texture file = "..\..\..\textures\moon.jpg" />
                     </model>  
                 </models>
             </group>
@@ -87,7 +87,7 @@
             <group>
                 <models>
                     <model file="sphere.3d">
-                        <texture file = "..\..\textures\mars.jpg" />
+                        <texture file = "..\..\..\textures\mars.jpg" />
                     </model>   
                 </models>
             </group>
@@ -99,7 +99,7 @@
                 </transform>
                 <models>
                     <model file="sphere.3d">
-                        <texture file = "..\..\textures\phobos.jpg" />
+                        <texture file = "..\..\..\textures\phobos.jpg" />
                     </model>  
                 </models>
             </group>
@@ -111,7 +111,7 @@
                 </transform>
                 <models>
                     <model file="sphere.3d">
-                        <texture file = "..\..\textures\deimos.jpg" />
+                        <texture file = "..\..\..\textures\deimos.jpg" />
                     </model>  
                 </models>
             </group>
@@ -124,7 +124,7 @@
             </transform>
             <models>
                 <model file="sphere.3d">
-                    <texture file = "..\..\textures\jupiter.jpg" />
+                    <texture file = "..\..\..\textures\jupiter.jpg" />
                 </model>   
             </models>
         </group>
@@ -139,7 +139,7 @@
                 </transform>
                 <models>
                     <model file="sphere.3d">
-                        <texture file = "..\..\textures\saturn.jpg" />
+                        <texture file = "..\..\..\textures\saturn.jpg" />
                     </model>   
                 </models>
             </group>
@@ -150,7 +150,7 @@
                 </transform>
                 <models>
                     <model file="torus.3d"> <!-- generator torus 6 8 20 2 torus.3d --> <!-- Anel de Saturno -->
-                        <texture file = "..\..\textures\saturn_ring.png" />
+                        <texture file = "..\..\..\textures\saturn_ring.png" />
                     </model>
                 </models>
             </group>
@@ -163,7 +163,7 @@
             </transform>
             <models>
                 <model file="sphere.3d">
-                    <texture file = "..\..\textures\uranus.jpg" />
+                    <texture file = "..\..\..\textures\uranus.jpg" />
                 </model>   
             </models>
         </group>
@@ -175,7 +175,7 @@
             </transform>
             <models>
                 <model file="sphere.3d">
-                    <texture file = "..\..\textures\neptune.jpg" />
+                    <texture file = "..\..\..\textures\neptune.jpg" />
                 </model>   
             </models>
         </group>
