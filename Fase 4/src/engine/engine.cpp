@@ -28,6 +28,7 @@
 // Modos da câmera
 #define SPHERICAL true
 #define FIRSTPERSON false
+#define PATH "../../test_files/test_files_phase_4/"
 
 using namespace std;
 
@@ -427,7 +428,7 @@ void drawFigure(std::string figureFile, std::string textureFile){
     // Feche o file
     file.close();
 
-    loadTextureVariable = loadTexture("../../test_files/test_files_phase_4/"+textureFile);
+    loadTextureVariable = loadTexture(PATH+textureFile);
     glBindTexture(GL_TEXTURE_2D,loadTextureVariable);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras]); 
