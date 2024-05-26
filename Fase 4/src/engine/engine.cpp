@@ -558,18 +558,7 @@ void renderScene(void) {
         camLookAtX, camLookAtY, camLookAtZ,
         camUpX, camUpY, camUpZ);
 
-    glDisable(GL_LIGHTING);
-    drawAxis();
-    glEnable(GL_LIGHTING);
-
-    glPolygonMode(GL_FRONT_AND_BACK, mode);
-
-    // Enable vertex array
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-     // Light
+    // Light
     glEnable(GL_LIGHTING);
     int lightIndex = 0;
     for (const Light& light : lights) {
@@ -594,13 +583,15 @@ void renderScene(void) {
         lightIndex++;
     }
 
+    glDisable(GL_LIGHTING);
+    drawAxis();
+    glEnable(GL_LIGHTING);
+
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
+
     //Transformations
     int index = 0;
     processTransformations(mainGroup, index);
-
-    // Disable vertex array
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
 
     framerate();
 
@@ -838,30 +829,30 @@ int main(int argc, char *argv[]) {
     #ifndef __APPLE__
     glewInit();
     #endif
-    
-    // OpenGL settings
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_RESCALE_NORMAL);
-    glEnable(GL_TEXTURE_2D);
     
     glShadeModel(GL_SMOOTH);
+
+    // Define a luz ambiente global
+    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
 
     // Initialize VBOs
     glGenBuffers(numFigurasMax, buffers);
     glGenBuffers(numFigurasMax, buffersN);
     glGenBuffers(numFigurasMax, buffersT);
     processVBOs(mainGroup);
-    
 
+    // Enable vertex array
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
     // Enter GLUT's main cycle
     glutMainLoop();
     return 1;
