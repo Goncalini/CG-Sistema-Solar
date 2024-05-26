@@ -103,6 +103,8 @@ struct Color { //cada campo tem um valor default caso o modelo não tenha cor no
     float specularR = 0, specularG = 0, specularB = 0;
     float emissiveR = 0, emissiveG = 0, emissiveB = 0;
     float shininessValue = 0;
+
+
 };
 struct Model { 
     std::string modelFile, textureFile;
@@ -164,6 +166,17 @@ void setupColors(const Color& color) {
     glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
     glMaterialfv(GL_FRONT, GL_EMISSION, emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
+
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0,GL_AMBIENT,ambient);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuse);
+    glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
+
+    glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1,GL_AMBIENT,ambient);
+    glLightfv(GL_LIGHT1,GL_DIFFUSE,diffuse);
+    glLightfv(GL_LIGHT1,GL_SPECULAR,specular);
+
 }
 
 
@@ -545,7 +558,14 @@ void renderScene(void) {
 
     drawAxis();
 
-    // Light
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+    // Enable vertex array
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+     // Light
     glEnable(GL_LIGHTING);
     int lightIndex = 0;
     for (const Light& light : lights) {
@@ -569,13 +589,6 @@ void renderScene(void) {
         // Incrementando o índice da luz
         lightIndex++;
     }
-
-    glPolygonMode(GL_FRONT_AND_BACK, mode);
-
-    // Enable vertex array
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     //Transformations
     int index = 0;
@@ -826,8 +839,11 @@ int main(int argc, char *argv[]) {
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_RESCALE_NORMAL);
@@ -840,9 +856,6 @@ int main(int argc, char *argv[]) {
     glGenBuffers(numFigurasMax, buffersN);
     glGenBuffers(numFigurasMax, buffersT);
     processVBOs(mainGroup);
-
-    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
     
 
     // Enter GLUT's main cycle
