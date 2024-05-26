@@ -167,15 +167,17 @@ void setupColors(const Color& color) {
     glMaterialfv(GL_FRONT, GL_EMISSION, emissive);
     glMaterialf(GL_FRONT, GL_SHININESS, color.shininessValue);
 
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0,GL_AMBIENT,ambient);
-    glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuse);
-    glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
 
-    glEnable(GL_LIGHT1);
-    glLightfv(GL_LIGHT1,GL_AMBIENT,ambient);
-    glLightfv(GL_LIGHT1,GL_DIFFUSE,diffuse);
-    glLightfv(GL_LIGHT1,GL_SPECULAR,specular);
+    int Index = 0;
+    for (const Light& light : lights) {
+        GLenum glLight = GL_LIGHT0 + Index;
+
+        glEnable(glLight);
+        glLightfv(glLight,GL_AMBIENT,ambient);
+        glLightfv(glLight,GL_DIFFUSE,diffuse);
+        glLightfv(glLight,GL_SPECULAR,specular);
+        Index++;
+    }
 
 }
 
@@ -556,7 +558,9 @@ void renderScene(void) {
         camLookAtX, camLookAtY, camLookAtZ,
         camUpX, camUpY, camUpZ);
 
+    glDisable(GL_LIGHTING);
     drawAxis();
+    glEnable(GL_LIGHTING);
 
     glPolygonMode(GL_FRONT_AND_BACK, mode);
 
