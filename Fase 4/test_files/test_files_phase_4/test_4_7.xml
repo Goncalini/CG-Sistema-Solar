@@ -14,7 +14,6 @@
 	<group>
 		<group> 
 			<transform> 
-				<translate x = "0.5" y = "0.2" z = "0.5" />
 				<scale x="0.2" y="0.2" z="0.2" />
 			</transform>
 			<models> 
@@ -23,7 +22,7 @@
 						<diffuse R="00" G="87" B="184" />
 						<ambient R="0" G="8" B="18" />
 						<specular R="255" G="255" B="255" />
-						<emissive R="0" G="0" B="0" />
+						<emissive R="255" G="0" B="0" />
 						<shininess value="128" />
 					</color>
 				</model>

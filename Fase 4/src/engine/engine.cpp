@@ -52,6 +52,10 @@ float beta2 = M_PI / 4; //beta is anbiguos in std beta
 float raio = 5.0f;
 GLenum mode = GL_LINE;
 
+
+std::vector<float> vertexB;
+std::vector<float> vertexN;
+
 //Iluminação
 enum LightType{
     POINT,
@@ -328,8 +332,7 @@ void drawFigure(std::string figureFile){
 
     if (vertices < std::stoi(linha)) vertices = std::stoi(linha);
 
-    std::vector<float> vertexB;
-    std::vector<float> vertexN;
+    
     std::vector<float> vertexT;
 
     // Leia o arquivo linha por linha
@@ -356,13 +359,21 @@ void drawFigure(std::string figureFile){
                     vertexN.push_back(value);
                 }
                 else if (tokenCount % 3 == 2){
-                    //Aqui as coordenadas das texturas
+                    //Aqui as coordenadas das texturasa
                     vertexT.push_back(value);
                 }
             }
             tokenCount++;
         }
+        //for (int i = 0; i < vertexN.size(); i++) {
+        //    std::cout<< vertexN[i] << std::endl;
+        //    vertexN[i] += vertexB[i];
+        //    std::cout<< vertexN[i] << std::endl;
+        //} 
     }
+
+
+    
 
     // Feche o file
     file.close();
@@ -527,6 +538,25 @@ void renderScene(void) {
     //............................................
 
     drawAxis();
+
+    //glBegin(GL_LINES);
+    //glColor3f(1,0,0);
+    //glVertex3f(1,1,1);
+    //for (size_t i = 0; i < vertexN.size(); i += 3) {
+        //std::cout << vertexN[i] << " "; // Imprime o valor atual do vetor
+    //    glVertex3f((vertexN[i]) + vertexB[i], vertexN[i+1] + vertexB[i+1], vertexN[i+2] + vertexB[i+2]);
+    //}
+    //glEnd();
+    glBegin(GL_LINES);
+    glColor3f(1, 0, 0); // Set color for normal vectors
+    for (size_t i = 0; i < vertexN.size(); i += 3) {
+        glVertex3f(vertexN[i], vertexN[i + 1], vertexN[i + 2]);
+        //glVertex3f(vertexB[i] + vertexN[i], vertexB[i + 1] + vertexN[i + 1], vertexB[i + 2] + vertexN[i + 2]);
+    }
+    glColor3f(1, 0, 0); // Set color for normal vectors
+    glEnd();
+
+
 
     glPolygonMode(GL_FRONT_AND_BACK, mode);
 
@@ -791,6 +821,8 @@ int main(int argc, char *argv[]) {
     // Initialize VBOs
     glGenBuffers(numFigurasMax*2, buffers);
     processVBOs(mainGroup);
+
+    
 
     // Enter GLUT's main cycle
     glutMainLoop();
