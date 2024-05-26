@@ -76,7 +76,9 @@ double frames;
 
 // VBOs
 int const numFigurasMax = 100;
-GLuint buffers[numFigurasMax*2];
+GLuint buffers[numFigurasMax];
+GLuint buffersN[numFigurasMax];
+GLuint buffersT[numFigurasMax];
 int numFiguras = 0;
 int vertices;
 
@@ -327,7 +329,7 @@ void drawFigure(std::string figureFile){
     if (vertices < std::stoi(linha)) vertices = std::stoi(linha);
 
     std::vector<float> vertexB;
-    std::vector<float> vertexL;
+    std::vector<float> vertexN;
     std::vector<float> vertexT;
 
     // Leia o arquivo linha por linha
@@ -351,7 +353,7 @@ void drawFigure(std::string figureFile){
                 }
                 else if (tokenCount % 3 == 1){
                     //Aqui as coordenadas das normais
-                    vertexL.push_back(value);
+                    vertexN.push_back(value);
                 }
                 else if (tokenCount % 3 == 2){
                     //Aqui as coordenadas das texturas
@@ -365,11 +367,11 @@ void drawFigure(std::string figureFile){
     // Feche o file
     file.close();
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras*2]); 
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras]); 
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras*2+1]); 
-    glBufferData(GL_ARRAY_BUFFER, vertexL.size() * sizeof(float), vertexL.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, buffersN[numFiguras]); 
+    glBufferData(GL_ARRAY_BUFFER, vertexN.size() * sizeof(float), vertexN.data(), GL_STATIC_DRAW);
     numFiguras++;
 }
 
@@ -440,14 +442,15 @@ void processTransformations(Group group, int& index){
 
     for (Model model : group.models){
         setupLighting(model.color);
-        glBindBuffer(GL_ARRAY_BUFFER, buffers[index++]);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, vertices);
 
-        glBindBuffer(GL_ARRAY_BUFFER,buffers[index++]);
+        glBindBuffer(GL_ARRAY_BUFFER,buffersN[index]);
         // normals have always 3 components
         glNormalPointer(GL_FLOAT,0,0);
-  
+
+        index++;
     }
 
     for (Group child : group.children){
