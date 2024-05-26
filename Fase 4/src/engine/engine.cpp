@@ -420,6 +420,7 @@ void drawFigure(std::string figureFile, std::string textureFile){
     file.close();
 
     loadTextureVariable = loadTexture("../../test_files/test_files_phase_4/"+textureFile);
+    std::cout << textureFile << std::endl;
     std::cout << loadTextureVariable << std::endl;
 
     glBindTexture(GL_TEXTURE_2D,loadTextureVariable);
@@ -855,6 +856,7 @@ int main(int argc, char *argv[]) {
     processVBOs(mainGroup);
 
     // Enable vertex array
+    glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
