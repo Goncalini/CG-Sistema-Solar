@@ -31,6 +31,8 @@
 
 using namespace std;
 
+GLuint loadTextureVariable;
+
 int width;
 int height;
 
@@ -112,6 +114,42 @@ struct Group {
     std::list<Group> children;
 };
 Group mainGroup;
+
+
+int loadTexture(std::string s) {
+
+	unsigned int t,tw,th;
+	unsigned char *texData;
+	unsigned int texID;
+
+	ilInit();
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+	ilGenImages(1,&t);
+	ilBindImage(t);
+	ilLoadImage((ILstring)s.c_str());
+	tw = ilGetInteger(IL_IMAGE_WIDTH);
+	th = ilGetInteger(IL_IMAGE_HEIGHT);
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+	texData = ilGetData();
+
+	glGenTextures(1,&texID);
+	
+	glBindTexture(GL_TEXTURE_2D,texID);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texID;
+
+}
 
 void setupColors(const Color& color) {
     // Convert 0-255 values to 0-1
@@ -319,7 +357,7 @@ void drawAxis(){
     glEnd();
 }
 
-void drawFigure(std::string figureFile){
+void drawFigure(std::string figureFile, std::string textureFile){
     // Abra o arquivo
     std::ifstream file(figureFile); // Assuming the file name is figureFile.txt
    
@@ -365,6 +403,10 @@ void drawFigure(std::string figureFile){
 
     // Feche o file
     file.close();
+
+    loadTextureVariable = loadTexture("../../textures/"+textureFile);
+
+    glBindTexture(GL_TEXTURE_2D,loadTextureVariable);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffers[numFiguras]); 
     glBufferData(GL_ARRAY_BUFFER, vertexB.size() * sizeof(float), vertexB.data(), GL_STATIC_DRAW);
@@ -442,11 +484,15 @@ void processTransformations(Group group, int& index){
 
     for (Model model : group.models){
         setupColors(model.color);
+        
         glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER,buffersN[index]);
         glNormalPointer(GL_FLOAT,0,0);
+
+        glBindBuffer(GL_ARRAY_BUFFER,buffersT[index]);
+        glTexCoordPointer(2,GL_FLOAT,0,0);
 
         glDrawArrays(GL_TRIANGLES, 0, vertices);
         index++;
@@ -528,6 +574,7 @@ void renderScene(void) {
     // Enable vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     //Transformations
     int index = 0;
@@ -732,50 +779,13 @@ void processKeys(unsigned char key, int xx, int yy) {
 
 void processVBOs(Group group){
     for (Model model : group.models) {
-        drawFigure(model.modelFile);
+        drawFigure(model.modelFile,model.textureFile);
     }
 
     for (Group child : group.children){
         processVBOs(child);
     }
 }
-
-
-int loadTexture(std::string s) {
-
-	unsigned int t,tw,th;
-	unsigned char *texData;
-	unsigned int texID;
-
-	ilInit();
-	ilEnable(IL_ORIGIN_SET);
-	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
-	ilGenImages(1,&t);
-	ilBindImage(t);
-	ilLoadImage((ILstring)s.c_str());
-	tw = ilGetInteger(IL_IMAGE_WIDTH);
-	th = ilGetInteger(IL_IMAGE_HEIGHT);
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	texData = ilGetData();
-
-	glGenTextures(1,&texID);
-	
-	glBindTexture(GL_TEXTURE_2D,texID);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
-
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return texID;
-
-}
-
 
 
 int main(int argc, char *argv[]) {
