@@ -788,6 +788,10 @@ void processKeys(unsigned char key, int xx, int yy) {
 
 void processVBOs(Group group){
     for (Model model : group.models) {
+        if (model.textureFile!=""){
+            glEnable(GL_TEXTURE_2D);
+            std::cout << model.textureFile << std::endl;
+        }
         drawFigure(model.modelFile,model.textureFile);
     }
 
