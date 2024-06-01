@@ -4,5 +4,5 @@ Grupo:
 
 - Gonçalo Costa
 - Marta Rodrigues
-- Ema Rodrigues
+- Ema Martins
 - Henrique Malheiro
